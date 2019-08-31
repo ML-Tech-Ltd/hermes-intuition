@@ -2,10 +2,11 @@
   :version "0.1.0"
   :author ""
   :license ""
-  :depends-on ()
+  :depends-on (:overmind-code)
   :components ((:module "src"
                 :components
-                ((:file "main"))))
+                ((:file "main" :depends-on ("classes"))
+		 (:file "classes"))))
   :description ""
   :long-description
   #.(read-file-string
