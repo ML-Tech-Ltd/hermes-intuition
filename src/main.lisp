@@ -86,10 +86,10 @@ deviation `stdev`, where grades of membership start at `from` and has a core at
   ((mean stdev from-x to-x from-y to-y)
    {mf (mapcar (lambda (x gm)
 		 (list x gm))
-	       (alexandria:iota 101 :start (floor from-x) :step (/ (abs (- from-x to-x)) 100))
+	       (alexandria:iota 101 :start from-x :step (/ (abs (- from-x to-x)) 100))
 	       (scale (mapcar (lambda (gm)
 				(exp (* -0.5 (expt (/ (- gm mean) stdev) 2))))
-			      (alexandria:iota 101 :start (floor from-x) :step (/ (abs (- from-x to-x)) 100)))
+			      (alexandria:iota 101 :start from-x :step (/ (abs (- from-x to-x)) 100)))
 		      from-y to-y))}))
 
 ;; (usables '(mf))
@@ -109,13 +109,13 @@ deviation `stdev`, where grades of membership start at `from` and has a core at
    {nmf (mapcar (lambda (x gm)
 		  (list x gm))
 		;; (range (ceiling (+ 1 to-x)) :min (floor from-x))
-		(alexandria:iota 101 :start (floor from-x) :step (/ (abs (- from-x to-x)) 100))
+		(alexandria:iota 101 :start from-x :step (/ (abs (- from-x to-x)) 100))
 		(scale (mapcar (lambda (x)
 				 (- 1 x))
 			       (mapcar (lambda (gm)
 					 (exp (* -0.5 (expt (/ (- gm mean) stdev) 2))))
 				       ;; (range (ceiling (+ 1 to-x)) :min (floor from-x) :step 1)
-				       (alexandria:iota 101 :start (floor from-x) :step (/ (abs (- from-x to-x)) 100))
+				       (alexandria:iota 101 :start from-x :step (/ (abs (- from-x to-x)) 100))
 				       ))
 		       from-y to-y))}))
 
@@ -255,7 +255,7 @@ non-membership function `nmf`."
        (first (last (-> ifs)))
        (if (< x (first (first (-> ifs))))
 	   (first (-> ifs))
-	   (let* ((index (floor x))
+	   (let* ((index x)
 		  (fraction (- x index))
 		  lelt
 		  relt)
@@ -263,17 +263,16 @@ non-membership function `nmf`."
 	     (cl:dolist (elt (-> ifs))
 	       (if (> (first elt) index)
 		   (cl:progn
-		     (cl:setf relt elt)
-		     (cl:return))
+		    (cl:setf relt elt)
+		    (cl:return))
 		   (cl:setf lelt elt)))
-	     (cl:append (list x)
+             (cl:append (list x)
 			(mapcar #'+
 				(cl:rest lelt)
 				(cl:rest
 				 (mapcar (lambda (diff)
 					   (* fraction diff))
 					 (mapcar #'- relt lelt)))))
-	     
 	     )))))
 
 ;; (cl:time (membership 0 (ifs (gaussian-mf 0 10 -10000 10000 0 1)
@@ -373,11 +372,23 @@ non-membership function `nmf`."
   :body
   ((x ifs)
    (let ((m (membership x ifs)))
-     (* (+ (nth 2 m) (nth 1 m))
+     (* (+ (nth 1 m) (nth 2 m))
 	(nth 1 m)))))
 
-;; (if-membership 20 (ifs (gaussian-mf 0 10 0 1)
-;; 		       (gaussian-nmf 0 10 0 1)))
+(def if-membership
+    "Returns the intuitionistic fuzzy membership of `x` in the intuitionistic fuzzy set `ifs`."
+  :sig ((number ifs) number)
+  :tests nil
+  :body
+  ((x ifs)
+   (let ((m (membership x ifs)))
+     (- (nth 1 m)
+        (* (+ (nth 2 m) (nth 1 m))
+	   (nth 2 m))))))
+
+;; (if-membership 45 (ifs (gaussian-mf 50 7 0 100 0 0.5)
+;; 		       (gaussian-nmf 60 7 0 100 0 1.0)))
+;; 0.387 0.1125
 
 (def clip
     "Performs an alpha-cut at grade of membership `x` on the intuitionistic fuzzy set `ifs`."
