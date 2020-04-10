@@ -375,16 +375,16 @@ non-membership function `nmf`."
      (* (+ (nth 1 m) (nth 2 m))
 	(nth 1 m)))))
 
-(def if-membership
-    "Returns the intuitionistic fuzzy membership of `x` in the intuitionistic fuzzy set `ifs`."
-  :sig ((number ifs) number)
-  :tests nil
-  :body
-  ((x ifs)
-   (let ((m (membership x ifs)))
-     (- (nth 1 m)
-        (* (+ (nth 2 m) (nth 1 m))
-	   (nth 2 m))))))
+;; (def if-membership
+;;     "Returns the intuitionistic fuzzy membership of `x` in the intuitionistic fuzzy set `ifs`."
+;;   :sig ((number ifs) number)
+;;   :tests nil
+;;   :body
+;;   ((x ifs)
+;;    (let ((m (membership x ifs)))
+;;      (- (nth 1 m)
+;;         (* (+ (nth 2 m) (nth 1 m))
+;; 	   (nth 2 m))))))
 
 ;; (if-membership 45 (ifs (gaussian-mf 50 7 0 100 0 0.5)
 ;; 		       (gaussian-nmf 60 7 0 100 0 1.0)))
