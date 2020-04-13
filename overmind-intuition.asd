@@ -5,8 +5,7 @@
   :depends-on (:overmind-code)
   :components ((:module "src"
                 :components
-                ((:file "main" :depends-on ("classes"))
-		 (:file "classes"))))
+                ((:file "main"))))
   :description ""
   :long-description
   #.(read-file-string
