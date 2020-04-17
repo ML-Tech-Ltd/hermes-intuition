@@ -2,7 +2,7 @@
   :version "0.1.0"
   :author ""
   :license ""
-  :depends-on (:overmind-code)
+  :depends-on (:overmind-code :alexandria)
   :components ((:module "src"
                 :components
                 ((:file "main"))))
