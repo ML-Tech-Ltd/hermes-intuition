@@ -5,7 +5,9 @@
   :depends-on (:overmind-code :alexandria)
   :components ((:module "src"
                 :components
-                ((:file "main"))))
+                ((:file "main")
+		 (:file "classes")
+		 (:file "ifs" :depends-on ("main" "classes")))))
   :description ""
   :long-description
   #.(read-file-string
