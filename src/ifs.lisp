@@ -285,7 +285,7 @@ If there is one, the two lines that are above the other two are returned."
 
 (def if-coa
     "Returns the intuitionistic center of area of `ifs`."
-  :sig ((ifs-polygon) number)
+  :sig ((ifs-polygon) coa)
   :tests nil
   :body
   ((ifs)
@@ -335,9 +335,7 @@ If there is one, the two lines that are above the other two are returned."
 	    ;; 	 (* 6 A)))
 	    )
        ;; (make-coa :a A :cx Cx)
-       (if (< Cx 0)
-	   (* (abs (* A Cx)) -1)
-	   (abs (* A Cx)))
+       (make-coa :a (abs A) :cx Cx)
        ))))
 
 ;; (cl:time (membership 0 (ifs (gaussian-mf 0 10 -10000 10000 0 1)
