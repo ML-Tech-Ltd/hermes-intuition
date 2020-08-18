@@ -13,7 +13,7 @@
 	   :if-membership
 	   :for-mf-what-nmf
 	   :clip
-	   :rule
+	   :fire-rule
 	   :alpha-cut
 	   :coa
 	   :if-coa))

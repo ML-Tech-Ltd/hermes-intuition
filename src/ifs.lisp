@@ -102,15 +102,15 @@ If there is one, the two lines that are above the other two are returned."
    (let ((m1 (-> line1 :m))
 	 (m2 (-> line2 :m)))
      (unless (= m1 m2)
-       (let* ((x11 (-> line1 :x1))
-	      (x12 (-> line1 :x2))
-	      (x21 (-> line2 :x1))
-	      (x22 (-> line2 :x2))
+       (let* ((x11 (min (-> line1 :x1) (-> line1 :x2)))
+	      (x12 (max (-> line1 :x1) (-> line1 :x2)))
+	      (x21 (min (-> line2 :x1) (-> line2 :x2)))
+	      (x22 (max (-> line2 :x1) (-> line2 :x2)))
 
-	      (y11 (-> line1 :y1))
-	      (y12 (-> line1 :y2))
-	      (y21 (-> line2 :y1))
-	      (y22 (-> line2 :y2))
+	      (y11 (if (= x11 (-> line1 :x1)) (-> line1 :y1) (-> line1 :y2)))
+	      (y12 (if (= x12 (-> line1 :x1)) (-> line1 :y1) (-> line1 :y2)))
+	      (y21 (if (= x21 (-> line2 :x1)) (-> line2 :y1) (-> line2 :y2)))
+	      (y22 (if (= x22 (-> line2 :x1)) (-> line2 :y1) (-> line2 :y2)))
 	      
 	      (b1 (-> line1 :b))
 	      (b2 (-> line2 :b))
@@ -118,46 +118,54 @@ If there is one, the two lines that are above the other two are returned."
 		    (- m1 m2)))
 	      (y (+ (* m1 x) b1)))
 	 (unless (or ;; (> y (max y11 y12))
-		     ;; (> y (max y21 y22))
-		     (< x (min x11 x12))
-		     (< x (min x21 x22))
-		     (> x (max x11 x12))
-		     (> x (max x21 x22))
-		     (< y 0))
-	   (cl:cond
-	     ;; Both going up. Left side of plot.
-	     ((and (> m1 0) (> m2 0))
-	      (if (< m1 m2)
-		  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
-			(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
-		  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
-			(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
-	     ;; Both going down. Right side of plot.
-	     ((and (< m1 0) (< m2 0))
-	      (if (> m1 m2)
-		  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
-			(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))
-		  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
-			(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))))
-	     ((= m1 0)
-	      (if (> m2 m1)
-		  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
-			(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
-		  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
-			(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
-	     ((= m2 0)
-	      (if (> m1 m2)
-		  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
-			(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))
-		  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
-			(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))))
-	     (t
-	      (if (< m1 m2)
-		  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
-			(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
-		  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
-			(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
-	     )
+		  ;; (> y (max y21 y22))
+		  (< x (min x11 x12))
+		  (< x (min x21 x22))
+		  (> x (max x11 x12))
+		  (> x (max x21 x22))
+		  (< y 0))
+	   ;; (cl:format t "x11: ~a, x12: ~a, x21: ~a, x22: ~a~%" x11 x12 x21 x22)
+	   ;; (cl:format t "y11: ~a, y12: ~a, y21: ~a, y22: ~a~%" y11 y12 y21 y22)
+	   ;; (cl:format t "x: ~a, y: ~a~%" x y)
+	   (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   	 (make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1)
+	   	 (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   	 (make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
+	   
+	   ;; (cl:cond
+	   ;;   ;; Both going up. Left side of plot.
+	   ;;   ((and (> m1 0) (> m2 0))
+	   ;;    (if (< m1 m2)
+	   ;; 	  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   ;; 		(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
+	   ;; 	  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   ;; 		(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
+	   ;;   ;; Both going down. Right side of plot.
+	   ;;   ((and (< m1 0) (< m2 0))
+	   ;;    (if (> m1 m2)
+	   ;; 	  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   ;; 		(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))
+	   ;; 	  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   ;; 		(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))))
+	   ;;   ((= m1 0)
+	   ;;    (if (> m2 m1)
+	   ;; 	  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   ;; 		(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
+	   ;; 	  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   ;; 		(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
+	   ;;   ((= m2 0)
+	   ;;    (if (> m1 m2)
+	   ;; 	  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   ;; 		(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))
+	   ;; 	  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   ;; 		(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))))
+	   ;;   (t
+	   ;;    (if (< m1 m2)
+	   ;; 	  (list (make-line :x1 x11 :y1 y11 :x2 x :y2 y :m m1 :b b1)
+	   ;; 		(make-line :x1 x :y1 y :x2 x22 :y2 y22 :m m2 :b b2))
+	   ;; 	  (list (make-line :x1 x21 :y1 y21 :x2 x :y2 y :m m2 :b b2)
+	   ;; 		(make-line :x1 x :y1 y :x2 x12 :y2 y12 :m m1 :b b1))))
+	   ;;   )
 	   )
 	 ))
      )))
@@ -264,9 +272,88 @@ If there is one, the two lines that are above the other two are returned."
 						    (loop for line2 in mf-lines
 						       collect (is-top-line line1 line2)))
 				      line1)))))
+       (print meow)
        (make-ifs-polygon
       :mf meow
       :nmf meow))
+     )))
+
+(def round-to
+    "Round numbers to certain precision."
+  :sig ((number) number)
+  :tests nil
+  :body
+  ((num)
+   (let ((div (expt 10 10)))
+     (/ (cl:round (* num div)) div))))
+
+(def remove-dominated-lines
+    "Remove every line that is 'below' a group of lines."
+  :sig ((ifs-polygon) ifs-polygon)
+  :tests nil
+  :body
+  ((ifs)
+   (let* ((mf (-> ifs :mf))
+	  (nmf (-> ifs :nmf))
+	  (dominating-lines-mf (loop for line in mf
+				  when (let* ((mnx (min (-> line :x1) (-> line :x2)))
+					      (mxx (max (-> line :x1) (-> line :x2)))
+					      (mny (if (= mnx (-> line :x1)) (-> line :y1) (-> line :y2)))
+					      (mxy (if (= mxx (-> line :x1)) (-> line :y1) (-> line :y2)))
+					      (delim-lines-mnx)
+					      (delim-lines-mxx))
+					 (loop for l in mf
+					    do (progn
+						 (when (and (<= mnx (max (-> l :x1) (-> l :x2)))
+							    (>= mnx (min (-> l :x1) (-> l :x2))))
+						   (push l delim-lines-mnx))
+						 (when (and (<= mxx (max (-> l :x1) (-> l :x2)))
+							    (>= mxx (min (-> l :x1) (-> l :x2))))
+						   (push l delim-lines-mxx))))
+					 (not (or (loop for delim in delim-lines-mnx
+						     when (< (round-to mny) (round-to (+ (* (-> delim :m) mnx) (-> delim :b))))
+						     collect t)
+						  (loop for delim in delim-lines-mxx
+						     when (< (round-to mxy) (round-to (+ (* (-> delim :m) mxx) (-> delim :b))))
+						     collect t)))
+					 )
+				  collect line)))
+     (make-ifs-polygon
+      :mf dominating-lines-mf
+      :nmf dominating-lines-mf)
+     )))
+
+(def ifunion
+    "Creates an intuitionistic fuzzy set represented by a
+`ifs-polygon` which is the intuitionistic fuzzy union of `ifs1` and
+`ifs2`, which is also a `ifs-polygon`."
+  :sig ((ifs-polygon ifs-polygon) ifs-polygon)
+  :tests nil
+  :body
+  ((ifs1 ifs2)
+   (let* ((mf1 (-> ifs1 :mf))
+	  (mf2 (-> ifs2 :mf))
+	  (nmf1 (-> ifs1 :nmf))
+	  (nmf2 (-> ifs2 :nmf))
+	  (mf-lines (remove-duplicates
+	  	     (alexandria:flatten
+	  	      (loop
+	  		 for line1 in mf1
+	  		 collect (loop for line2 in mf2
+	  			    collect
+	  			      (let ((inter (line-intersection-winners line1 line2)))
+					    (if inter
+						inter
+						(list line1 line2)
+						)))))
+	  	     :test #'cl:equalp))
+	  ;; (mf-lines (append mf1 mf2))
+	  )
+     ;; (cl:format t "~%~%PRE~%~%~a~%" (append mf1 mf2))
+     (remove-dominated-lines
+      (make-ifs-polygon
+       :mf mf-lines
+       :nmf mf-lines))
      )))
 
 (def non-membership-polygon
@@ -283,60 +370,108 @@ If there is one, the two lines that are above the other two are returned."
 	     (return)))
      result)))
 
+(def fire-rule
+    "Returns the alpha-cut consequent in an intuitionistic fuzzy rule, given an input `x` to the antecedent of the given rule."
+  :sig ((number rule) ifs-polygon)
+  :tests nil
+  :body
+  ((x rule)
+   (alpha-cut (if-membership x (-> rule :antecedent))
+	      (-> rule :consequent))))
+
+;; (fire-rule 0.5 )
+
+(def remove-y0-lines
+    "Removes any line with both y1 and y1 equal to 0."
+  :sig ((ifs-polygon) list)
+  :tests nil
+  :body
+  ((ifs)
+   (let* ((is-y>0 (cl:find t ifs :key (lambda (line) (or (cl:> (-> line :y1) 0)
+							 (cl:> (-> line :y2) 0)))))
+	  (lines (when is-y>0
+		   (sort (remove-duplicates (loop for line in ifs
+					       when (not (and (= (-> line :y1) 0)
+							      (= (-> line :y2) 0)))
+					       collect line)
+					    :test (lambda (line1 line2)
+						    (and (= (round-to (-> line1 :x1))
+							    (round-to (-> line2 :x1)))
+							 (= (round-to (-> line1 :x2))
+							    (round-to (-> line2 :x2)))
+							 (= (round-to (-> line1 :y1))
+							    (round-to (-> line2 :y1)))
+							 (= (round-to (-> line1 :y2))
+							    (round-to (-> line2 :y2))))))
+			 #'<
+			 :key (lambda (elt) (-> elt :x1))))))
+     lines)))
+
 (def if-coa
     "Returns the intuitionistic center of area of `ifs`."
   :sig ((ifs-polygon) coa)
   :tests nil
   :body
   ((ifs)
-   (let ((imf (alexandria:copy-sequence 'list (-> ifs :mf))))
-     (loop for line in imf
-	;; Affecting memberships with non-membership, i.e.
-	;; obtaining intuitionistic memberhip.
-	do (progn
-	     (cl:setf (-> line :y1) (* (+ (-> line :y1)
-					  (- 1 (non-membership-polygon (-> line :x1) ifs)))
-				       (-> line :y1)))
-	     (cl:setf (-> line :y2) (* (+ (-> line :y2)
-					  (- 1 (non-membership-polygon (-> line :x2) ifs)))
-				       (-> line :y2)))
-	     ))
-     (let* ((first-line (first imf))
-	    (last-line (first (last imf)))
-	    (closing-line (list (make-line :x1 (-> last-line :x2) :y1 (-> last-line :y2)
-					   :x2 (-> first-line :x1) :y2 (-> first-line :y1)
-					   :b 0d0 :m 0d0)))
-	    (full-imf (append imf closing-line))
-	    ;; Obtaining area.
-	    (A (/ (loop for line in full-imf
-		     summing (let ((x1 (-> line :x1))
-				   (x2 (-> line :x2))
-				   (y1 (-> line :y1))
-				   (y2 (-> line :y2)))
-			       (- (* x1 y2)
-				  (* x2 y1))))
-		  2))
-	    (Cx (if (= A 0)
-		    0
-		    (/ (loop for line in full-imf
-			  summing (let ((x1 (-> line :x1))
-					(x2 (-> line :x2))
-					(y1 (-> line :y1))
-					(y2 (-> line :y2)))
-				    (* (+ x1 x2)
-					      (- (* x1 y2)
-						 (* x2 y1)))))
-		       (* 6 A))))
-	    ;; Eh, I didn't need this, but I'll leave it here. Just in case.
-	    ;; (Cy (/ (loop for line in full-imf
-	    ;; 	    summing (* (+ y1 y2)
-	    ;; 		       (- (* x1 y2)
-	    ;; 			  (* x2 y1))))
-	    ;; 	 (* 6 A)))
-	    )
-       ;; (make-coa :a A :cx Cx)
-       (make-coa :a (abs A) :cx Cx)
-       ))))
+   (let ((imf (remove-y0-lines (-> ifs :mf))))
+     
+     ;; (loop for line in imf
+     ;; 	;; Affecting memberships with non-membership, i.e.
+     ;; 	;; obtaining intuitionistic memberhip.
+     ;; 	do (progn
+     ;; 	     (cl:setf (-> line :y1) (* (+ (-> line :y1)
+     ;; 					  (- 1 (non-membership-polygon (-> line :x1) ifs)))
+     ;; 				       (-> line :y1)))
+     ;; 	     (cl:setf (-> line :y2) (* (+ (-> line :y2)
+     ;; 					  (- 1 (non-membership-polygon (-> line :x2) ifs)))
+     ;; 				       (-> line :y2)))
+     ;; 	     ))
+     
+     ;; (loop for line in imf
+     ;; 	when (cl:and (cl:= (-> line :y1) 0)
+     ;; 		     (cl:= (-> line :y2) 0))
+     ;; 	do (print line))
+     (if imf
+	 (let* ((closing-line (when imf (list (let ((mnx (apply #'min (loop for line in imf collect (min (-> line :x1) (-> line :x2)))))
+						    (mxx (apply #'max (loop for line in imf collect (max (-> line :x1) (-> line :x2))))))
+						(make-line :x1 mxx
+							   :y1 0
+							   :x2 mnx
+							   :y2 0
+							   :b 0d0 :m 0d0)))))
+		(full-imf (append imf closing-line))
+		;; Obtaining area.
+		(A (/ (loop for line in full-imf
+			 summing (let ((x1 (-> line :x1))
+				       (x2 (-> line :x2))
+				       (y1 (-> line :y1))
+				       (y2 (-> line :y2)))
+				   (- (* x1 y2)
+				      (* x2 y1))))
+		      2))
+		(Cx (if (= A 0)
+			0
+			(/ (loop for line in full-imf
+			      summing (let ((x1 (-> line :x1))
+					    (x2 (-> line :x2))
+					    (y1 (-> line :y1))
+					    (y2 (-> line :y2)))
+					(* (+ x1 x2)
+					   (- (* x1 y2)
+					      (* x2 y1))
+					   )))
+			   (* 6 A))))
+		;; Eh, I didn't need this, but I'll leave it here. Just in case.
+		;; (Cy (/ (loop for line in full-imf
+		;; 	    summing (* (+ y1 y2)
+		;; 		       (- (* x1 y2)
+		;; 			  (* x2 y1))))
+		;; 	 (* 6 A)))
+		)
+	   (make-coa :a (abs A) :cx Cx)
+	   )
+	 (make-coa :a 0 :cx 0))
+     )))
 
 ;; (cl:time (membership 0 (ifs (gaussian-mf 0 10 -10000 10000 0 1)
 ;; 			    (gaussian-nmf 0 10 -10000 10000 0 1))))
