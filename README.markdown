@@ -1,4 +1,4 @@
-# Overmind-Intuition
+# Hermes Intuition
 
 ## Usage
 
