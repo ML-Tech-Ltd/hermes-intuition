@@ -1,16 +1,16 @@
 ;; (ql:quickload :hermes-intuition)
 (defpackage hermes-intuition
   (:use #:cl #:alexandria)
-  (:import-from #:omcom.utils
+  (:import-from #:hscom.utils
 		#:random-float)
-  (:import-from #:ominp.rates
+  (:import-from #:hsinp.rates
 		#:get-tp-sl
 		#:from-pips)
   (:export #:con
 	   #:ant
 	   #:eval-ifis)
   
-  (:nicknames #:omint))
+  (:nicknames #:hsint))
 (in-package :hermes-intuition)
 
 (cl:setf cl:*read-default-float-format* 'cl:double-float)
@@ -89,11 +89,11 @@
 
 
 
-;; (defparameter *rates* (fracdiff (get-rates-random-count-big :AUD_USD omcom.omage:*train-tf* 10000)))
+;; (defparameter *rates* (fracdiff (get-rates-random-count-big :AUD_USD hscom.hsage:*train-tf* 10000)))
 ;; (make-ifis (gen-agent 3 :EUR_USD *rates* (assoccess (gen-random-beliefs 2) :perception-fns) 10 10) 3 :EUR_USD *rates*)
 ;; (time
-;;  (evaluate-agent (let ((beliefs (gen-random-beliefs omcom.omage:*number-of-agent-inputs*)))
-;; 		   (gen-agent omcom.omage:*number-of-agent-rules*
+;;  (evaluate-agent (let ((beliefs (gen-random-beliefs hscom.hsage:*number-of-agent-inputs*)))
+;; 		   (gen-agent hscom.hsage:*number-of-agent-rules*
 ;; 			      :AUD_USD
 ;; 			      *rates*
 ;; 			      (assoccess beliefs :perception-fns)
@@ -102,4 +102,4 @@
 ;; 		 *rates* :return-fitnesses-p t))
 
 ;; (slot-value (gen-agent 2 *rates* (assoccess (gen-random-beliefs 2) :perception-fns) 10 10) 'perception-fns)
-;; (insert-agent (gen-agent 2 *rates* (assoccess (gen-random-beliefs 2) :perception-fns) 10 16) :EUR_USD omcom.omage:*train-tf* '(:BULLISH))
+;; (insert-agent (gen-agent 2 *rates* (assoccess (gen-random-beliefs 2) :perception-fns) 10 16) :EUR_USD hscom.hsage:*train-tf* '(:BULLISH))
