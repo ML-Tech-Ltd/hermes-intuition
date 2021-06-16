@@ -8,8 +8,8 @@
 		#:from-pips)
   (:export #:con
 	   #:ant
-	   #:eval-ifis)
-  
+	   #:eval-ifis-gen
+	   #:eval-ifis-idx)
   (:nicknames #:hsint))
 (in-package :hermes-intuition)
 
@@ -35,7 +35,41 @@
 ;; (defun make-antecedent (mean spread)
 ;;   (lambda (x) (exp (* -0.5 (expt (/ (- x mean) spread) 2)))))
 
-(defun eval-ifis (inputs input-antecedents input-consequents)
+(defun eval-ifis-gen (inputs input-antecedents input-consequents)
+  (let ((tp 0)
+	(sl 0)
+	(activation 0)
+	(len (length inputs)))
+    (loop
+      for input in inputs
+      for antecedents across input-antecedents
+      for consequents across input-consequents
+      do (let ((winner-gm 0)
+	       (winner-idx 0))
+	   (loop
+	     for idx from 0
+	     for ant across antecedents
+	     do (let ((gm (ant input (aref ant 0) (aref ant 1))))
+		  ;; Antecedents will always work with OR (max).
+		  (when (and (<= gm 1)
+			     (>= gm 0)
+			     (>= gm winner-gm))
+		    (setf winner-idx idx)
+		    (setf winner-gm gm))))
+	   ;; Averaging outputs (tp and sl).
+	   (unless (= winner-gm 0)
+	     (incf activation winner-gm)
+	     (incf tp (con winner-gm
+			   (aref (aref (aref consequents winner-idx) 0) 0)
+			   (aref (aref (aref consequents winner-idx) 0) 1)))
+	     (incf sl (con winner-gm
+			   (aref (aref (aref consequents winner-idx) 1) 0)
+			   (aref (aref (aref consequents winner-idx) 1) 1))))))
+    (values (/ tp len)
+	    (/ sl len)
+	    (/ activation len))))
+
+(defun eval-ifis-idx (inputs input-antecedents input-consequents)
   (let ((tp 0)
 	(sl 0)
 	(len (length inputs))
@@ -58,19 +92,19 @@
 	     (setf winner-gm gm))))
     ;; Calculating outputs (TP & SL).
     (let ((activation (/ winner-gm len)))
-      (loop
-	for consequents across input-consequents
-	do (progn
-	     (incf tp (con activation
-			   (aref (aref (aref consequents winner-idx) 0) 0)
-			   (aref (aref (aref consequents winner-idx) 0) 1)))
-	     (incf sl (con activation
-			   (aref (aref (aref consequents winner-idx) 1) 0)
-			   (aref (aref (aref consequents winner-idx) 1) 1)))))
-      (values
-       (/ tp len)
-       (/ sl len)
-       activation))))
+      (unless (= winner-gm 0)
+	(loop
+	  for consequents across input-consequents
+	  do (progn
+	       (incf tp (con activation
+			     (aref (aref (aref consequents winner-idx) 0) 0)
+			     (aref (aref (aref consequents winner-idx) 0) 1)))
+	       (incf sl (con activation
+			     (aref (aref (aref consequents winner-idx) 1) 0)
+			     (aref (aref (aref consequents winner-idx) 1) 1))))))
+      (values (/ tp len)
+	      (/ sl len)
+	      activation))))
 
 ;; Keeping for historical reasons.
 ;; (defun ifis (i antecedents consequents)
