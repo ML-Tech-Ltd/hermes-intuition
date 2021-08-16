@@ -35,39 +35,48 @@
 ;; (defun make-antecedent (mean spread)
 ;;   (lambda (x) (exp (* -0.5 (expt (/ (- x mean) spread) 2)))))
 
-(defun eval-ifis-gen (inputs input-antecedents input-consequents)
+(defun eval-ifis-gen (inputs antecedents consequents perceptions-count rules-count)
   (let ((tp 0)
 	(sl 0)
-	(activation 0)
-	(len (length inputs)))
-    (loop
-      for input in inputs
-      for antecedents across input-antecedents
-      for consequents across input-consequents
-      do (let ((winner-gm 0)
-	       (winner-idx 0))
-	   (loop
-	     for idx from 0
-	     for ant across antecedents
-	     do (let ((gm (ant input (aref ant 0) (aref ant 1))))
-		  ;; Antecedents will always work with OR (max).
-		  (when (and (<= gm 1)
-			     (>= gm 0)
-			     (>= gm winner-gm))
-		    (setf winner-idx idx)
-		    (setf winner-gm gm))))
-	   ;; Averaging outputs (tp and sl).
-	   (unless (= winner-gm 0)
-	     (incf activation winner-gm)
-	     (incf tp (con winner-gm
-			   (aref (aref (aref consequents winner-idx) 0) 0)
-			   (aref (aref (aref consequents winner-idx) 0) 1)))
-	     (incf sl (con winner-gm
-			   (aref (aref (aref consequents winner-idx) 1) 0)
-			   (aref (aref (aref consequents winner-idx) 1) 1))))))
-    (values (/ tp len)
-	    (/ sl len)
-	    (/ activation len))))
+	(activation 0))
+    (loop for input in inputs
+	  for perception-idx from 0
+	  do (let ((winner-gm 0)
+		   (winner-idx 0))
+	       (loop named winner-search
+		     for i from (* perception-idx 4 rules-count) by 2
+		     for idx from 0
+		     ;; Each rule is represented by `4` points, so we divide by 4.
+		     while (< i (* (1+ perception-idx) 4 rules-count))
+		     do (let ((ant (subseq antecedents i (+ i 2))))
+			  (let ((gm (ant input (aref ant 0) (aref ant 1))))
+			    ;; Antecedents are ordered (ascending), so if `gm` < `winner-gm`,
+			    ;; it means it's not necessary to check any further rules; we found the winner.
+			    (when (and (<= gm 1)
+				       (>= gm 0)
+				       (< gm winner-gm))
+			      (return-from winner-search))
+			    ;; Antecedents will always work with OR (max).
+			    (when (and (<= gm 1)
+				       (>= gm 0)
+				       (>= gm winner-gm))
+			      (setf winner-idx idx)
+			      (setf winner-gm gm)))))
+	       ;; Averaging outputs (tp and sl).
+	       (unless (= winner-gm 0)
+		 (incf activation winner-gm)
+		 ;; We divide `winner-idx` by 2 because each rule has 2 sides of a triangle.
+		 ;; Each consequent has 2 points and 2 outputs (tp and sl), so 2*2 = `4`.
+		 (let ((winner-offset (* (floor (/ winner-idx 2)) 4)))
+		   (incf tp (con winner-gm
+				 (aref consequents (+ winner-offset 0))
+				 (aref consequents (+ winner-offset 1))))
+		   (incf sl (con winner-gm
+				 (aref consequents (+ winner-offset 2))
+				 (aref consequents (+ winner-offset 3))))))))
+    (values (/ tp perceptions-count)
+	    (/ sl perceptions-count)
+	    (/ activation perceptions-count))))
 
 (defun eval-ifis-idx (inputs input-antecedents input-consequents)
   (let ((tp 0)
