@@ -8,7 +8,7 @@
 ;;;  that this notice is not removed.
 
 ;;; Bugs and Fixes
-;;;   
+;;;
 
 (in-package "CLMATH")
 
@@ -20,9 +20,9 @@
 ;;;
 (defun fib-slow (n)
   (cond ((= n 0) 0)
-	((= n 1) 1)
-	(t (+ (fib-slow (- n 1))
-	      (fib-slow (- n 2))))))
+        ((= n 1) 1)
+        (t (+ (fib-slow (- n 1))
+              (fib-slow (- n 2))))))
 
 
 ;;;; Fibonacci -- The Fast Recursive Way
@@ -48,17 +48,17 @@
 
 (defun fib-iter (n k fk fk+1 m fm fm+1)
   (cond ((>= m n) fm)
-	((oddp (/ (- n m) k))
-	 (fib-iter n k fk fk+1 (+ m k)
-		   (fibn+k   fm fm+1 fk fk+1)
-		   (fibn+k+1 fm fm+1 fk fk+1)))
-	(t
-	 (fib-iter n
-		   (* 2 k)
-		   (fibn+k   fk fk+1 fk fk+1)
-		   (fibn+k+1 fk fk+1 fk fk+1)
-		   m fm fm+1))))
-		   
+        ((oddp (/ (- n m) k))
+         (fib-iter n k fk fk+1 (+ m k)
+                   (fibn+k   fm fm+1 fk fk+1)
+                   (fibn+k+1 fm fm+1 fk fk+1)))
+        (t
+         (fib-iter n
+                   (* 2 k)
+                   (fibn+k   fk fk+1 fk fk+1)
+                   (fibn+k+1 fk fk+1 fk fk+1)
+                   m fm fm+1))))
+
 (defun fib (n)
   (fib-iter n 1 1 1 0 0 1))
 
@@ -68,5 +68,5 @@
 (defun fib-binet (n)
   (* (/ 1 (sqrt 5))
      (- (expt (/ (+ 1 (sqrt 5)) 2) n)
-	(expt (/ (- 1 (sqrt 5)) 2) n))))
+        (expt (/ (- 1 (sqrt 5)) 2) n))))
 

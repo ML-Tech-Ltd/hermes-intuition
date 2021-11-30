@@ -42,25 +42,25 @@
   (if (or (< x 0.0) (> x (* 0.5 (log 2.0))))
       (error "EXPONENTIAL:  out of range"))
   (1+ (/ (* 2.0 x)				;eps < 1.0e-9
-	 (+ 12.01501675387500
-	    (- x)
-	    (/ -601.8042666979565
-	       (+ 60.09019073192600
-		  (* x x)))))))
+         (+ 12.01501675387500
+            (- x)
+            (/ -601.8042666979565
+               (+ 60.09019073192600
+                  (* x x)))))))
 
 (defun exponential (x)
   (let* ((xlog2 (/ x (log 2.0)))
-	 (int   (floor xlog2))
-	 (frac  (- xlog2 (float int))))
+         (int   (floor xlog2))
+         (frac  (- xlog2 (float int))))
     (declare (fixnum int)
-	     (float xlog2 frac))
+             (float xlog2 frac))
     (floating-scale (cond ((< frac 0.5)
-			   (exponential-1 (* frac (log 2.0))))
-			  (t
-			   (* (sqrt 2.0)
-			      (exponential-1 (* (- frac 0.5) (log 2.0)))
-			      )))
-		    int)))
+                           (exponential-1 (* frac (log 2.0))))
+                          (t
+                           (* (sqrt 2.0)
+                              (exponential-1 (* (- frac 0.5) (log 2.0)))
+                              )))
+                    int)))
 
 
 ;;;; Logarithm
@@ -71,20 +71,20 @@
   (if (not (plusp x))
       (error "LOGARITHM:  non positive arg"))
   (let* ((exp (floating-exponent x))
-	 (man (floating-mantissa x))
-	 (u (/ (- man (/ (sqrt 2.0) 2.0))
-	       (+ man (/ (sqrt 2.0) 2.0))))
-	 (z  (* u u)))
+         (man (floating-mantissa x))
+         (u (/ (- man (/ (sqrt 2.0) 2.0))
+               (+ man (/ (sqrt 2.0) 2.0))))
+         (z  (* u u)))
     (declare (float man u z)
-	     (fixnum exp))
+             (fixnum exp))
     (+ (* (float exp) (log 2.0))
        (- (* u					;eps < 2^-32
-	     (poly z
-		   1.999999993788
-		   0.666669470507
-		   0.399659100019
-		   0.300974506336))
-	  (/ (log 2.0) 2.0)))))
+             (poly z
+                   1.999999993788
+                   0.666669470507
+                   0.399659100019
+                   0.300974506336))
+          (/ (log 2.0) 2.0)))))
 
 
 ;;;; Trigonometric Functions
@@ -94,16 +94,16 @@
 (defun sine (x)
   (declare (float x sign z z2))
   (let ((sign 1.0)
-	(z    (* 4.0 (fraction (/ x (* (float pi 1.0) 2.0)))))
-	(z2   0.0))
+        (z    (* 4.0 (fraction (/ x (* (float pi 1.0) 2.0)))))
+        (z2   0.0))
     (if (> z 2.0) (setq sign -1.0		;sin(pi+z)=-sin(z)
-			z (- z 2.0)))		;  z is quad 0 or 1 now
+                        z (- z 2.0)))		;  z is quad 0 or 1 now
     (if (> z 1.0) (setq z (- 2.0 z)))		;sin(pi:2+z)=sin(pi:2-z)
     (setq z2 (* z z))
     (* sign z (poly z2				;eps < .5e-9
-		    1.57079632662143 -0.64596409264401
-		    0.07969258728630 -0.00468162023910
-		    0.00016021713430 -0.00000341817225))
+                    1.57079632662143 -0.64596409264401
+                    0.07969258728630 -0.00468162023910
+                    0.00016021713430 -0.00000341817225))
     ))
 
 (defun cosine (x)
@@ -117,25 +117,25 @@
 
 (defun arctan (y x)
   (cond ((< y 0.0) (- (arctan (- y) x)))
-	((< x 0.0) (- (float pi 1.0) (arctan y (- x))))
-	((= y 0.0) (cond ((= x 0.0) (error "ARCTAN:  0,0 bad arg"))
-			 (t 0.0)))
-	((= x 0.0) (/ (float pi 1.0) 2.0))
-	((> (/ y x) 1.0) (- (/ (float pi 1.0) 2.0) (arctan x y)))
-	(t (setq y (/ y x))
-	   (let ((c 0.0) (z 0.0) (z2 0.0))
-	     (cond ((< y (- 2.0 (sqrt 3.0)))
-		    (setq c 0.0
-			  z y
-			  z2 (* y y)))
-		   (t
-		    (setq c (/ (float pi 1.0) 6.0)
-			  z (/ (1- (* y (sqrt 3.0)))
-			       (+ y (sqrt 3.0)))
-			  z2 (* z z))))
-	     (+ c
-		(* z
-		   (poly z2
-			 0.99999999843 -0.33333289364
-			 0.19996534780 -0.14173460613
-			 0.09491954952)))))))
+        ((< x 0.0) (- (float pi 1.0) (arctan y (- x))))
+        ((= y 0.0) (cond ((= x 0.0) (error "ARCTAN:  0,0 bad arg"))
+                         (t 0.0)))
+        ((= x 0.0) (/ (float pi 1.0) 2.0))
+        ((> (/ y x) 1.0) (- (/ (float pi 1.0) 2.0) (arctan x y)))
+        (t (setq y (/ y x))
+           (let ((c 0.0) (z 0.0) (z2 0.0))
+             (cond ((< y (- 2.0 (sqrt 3.0)))
+                    (setq c 0.0
+                          z y
+                          z2 (* y y)))
+                   (t
+                    (setq c (/ (float pi 1.0) 6.0)
+                          z (/ (1- (* y (sqrt 3.0)))
+                               (+ y (sqrt 3.0)))
+                          z2 (* z z))))
+             (+ c
+                (* z
+                   (poly z2
+                         0.99999999843 -0.33333289364
+                         0.19996534780 -0.14173460613
+                         0.09491954952)))))))

@@ -40,16 +40,16 @@
 
 (defun matrix-print-matrix (a)
   (let ((n (array-dimension a 0))
-	(m (array-dimension a 1)))
+        (m (array-dimension a 1)))
     (declare (fixnum m n))
     (dotimes (i n)
       (declare (fixnum i))
       (terpri)
       (dotimes (j m)
-	(declare (fixnum j))
-	(format t "~5,1,10$ " (aref a i j))))
-     (terpri)
-     a))
+        (declare (fixnum j))
+        (format t "~5,1,10$ " (aref a i j))))
+    (terpri)
+    a))
 
 (defun matrix-print (a)
   (let ((dims (array-rank a)))
@@ -59,7 +59,7 @@
       (1 (matrix-print-vector a))
       (2 (matrix-print-matrix a))
       (otherwise
-	(error "MATRIX-PRINT given more than two dimensions")))))
+       (error "MATRIX-PRINT given more than two dimensions")))))
 
 
 ;;;; Matrix Stuff
@@ -68,7 +68,7 @@
 ;;;
 (defun matrix-identity (n)
   (do ((matrix (make-array (list n n)
-			   :element-type 'float :initial-element 0.0))
+                           :element-type 'float :initial-element 0.0))
        (i 0 (1+ i)))
       ((>= i n) matrix)
     (declare (fixnum i))
@@ -78,28 +78,28 @@
 ;;;
 (defun matrix-copy (a)
   (let ((copy (make-array (array-dimensions a)
-			  :element-type (array-element-type a))))
+                          :element-type (array-element-type a))))
     (case (array-rank a)
       (1 (replace copy a))
       (2 (dotimes (i (array-dimension a 0))
-	   (dotimes (j (array-dimension a 1))
-	     (setf (aref copy i j) (aref a i j)))))
+           (dotimes (j (array-dimension a 1))
+             (setf (aref copy i j) (aref a i j)))))
       (otherwise
-	(error "Matrix-Copy lost ~s" a)))
+       (error "Matrix-Copy lost ~s" a)))
     copy))
 
 ;;; Copy just the diagonal elements of a matrix
 ;;;
 (defun matrix-diagonal (a)
   (let* ((n      (array-dimension a 0))
-	 (matrix (make-array (list n n)
-			     :element-type 'float :initial-element 0.0)))
+         (matrix (make-array (list n n)
+                             :element-type 'float :initial-element 0.0)))
     (declare (fixnum n))
     (do ((i 0 (1+ i)))
-	((>= i n) matrix)
+        ((>= i n) matrix)
       (declare (fixnum i))
       (setf (aref matrix i i)
-	    (aref a      i i)))))
+            (aref a      i i)))))
 
 
 ;;;; Matrix Addition and Subtraction
@@ -108,34 +108,34 @@
 ;;;
 (defun matrix-add (a b)
   (let* ((n (array-dimension a 0))
-	 (m (array-dimension a 1))
-	 (c (make-array (list n m)
-			:element-type 'float :initial-element 0.0)))
+         (m (array-dimension a 1))
+         (c (make-array (list n m)
+                        :element-type 'float :initial-element 0.0)))
     (declare (fixnum m n))
     (dotimes (i n)
       (declare (fixnum i))
       (dotimes (j m)
-	(declare (fixnum j))
-	(setf (aref c i j)
-	      (+ (aref a i j)
-		 (aref b i j)))))
-     c))
+        (declare (fixnum j))
+        (setf (aref c i j)
+              (+ (aref a i j)
+                 (aref b i j)))))
+    c))
 
 ;;; Subtract 2 Matrices
 ;;;
 (defun matrix-sub (a b)
   (let* ((n (array-dimension a 0))
-	 (m (array-dimension a 1))
-	 (c (make-array (list n m)
-			:element-type 'float :initial-element 0.0)))
+         (m (array-dimension a 1))
+         (c (make-array (list n m)
+                        :element-type 'float :initial-element 0.0)))
     (declare (fixnum m n))
     (dotimes (i n)
       (declare (fixnum i))
       (dotimes (j m)
-	(declare (fixnum j))
-	(setf (aref c i j)
-	      (- (aref a i j)
-		 (aref b i j)))))
+        (declare (fixnum j))
+        (setf (aref c i j)
+              (- (aref a i j)
+                 (aref b i j)))))
     c))
 
 
@@ -154,19 +154,19 @@
     (declare (fixnum n))
     (dotimes (i n)				; do for each row
       (declare (fixnum i))
-      
+
       (if (not MD-unity)			; main diagonal not unity?
-	  (setf (aref b i)			; solution for xi
-		(/ (aref b i)
-		   (aref A i i))))
-      
+          (setf (aref b i)			; solution for xi
+                (/ (aref b i)
+                   (aref A i i))))
+
       (do ((j (1+ i) (1+ j)))			; do for all the x[i] we know
-	  ((>= j n))
-	(declare (fixnum j))
-	(setf (aref b j)
-	      (- (aref b j)
-		 (* (aref A j i)
-		    (aref b i))))))
+          ((>= j n))
+        (declare (fixnum j))
+        (setf (aref b j)
+              (- (aref b j)
+                 (* (aref A j i)
+                    (aref b i))))))
     b))
 
 ;;; solve Ax=b, put result in b
@@ -175,21 +175,21 @@
   (let ((n (array-dimension A 0)))
     (declare (fixnum n))
     (do ((i (1- n) (1- i)))			; do for each row
-	((< i 0))
+        ((< i 0))
       (declare (fixnum i))
-      
+
       (if (not MD-unity)			; main diagonal not unity?
-	  (setf (aref b i)			; solution for xi
-		(/ (aref b i)
-		   (aref A i i))))
-      
+          (setf (aref b i)			; solution for xi
+                (/ (aref b i)
+                   (aref A i i))))
+
       (do ((j (1- i) (1- j)))			; do for all the x[i] we know
-	  ((< j 0))
-	(declare (fixnum j))
-	(setf (aref b j)
-	      (- (aref b j)
-		 (* (aref A j i)
-		    (aref b i))))))
+          ((< j 0))
+        (declare (fixnum j))
+        (setf (aref b j)
+              (- (aref b j)
+                 (* (aref A j i)
+                    (aref b i))))))
     b))
 
 
@@ -250,7 +250,7 @@
 
 ;;; throw in permutation:
 
-;;;  Mn ... M3 M2 M1 A P1 P2 P3 ... Pn = Mn ... M3 M2 M1 A P1 P2 P3 ... Pn 
+;;;  Mn ... M3 M2 M1 A P1 P2 P3 ... Pn = Mn ... M3 M2 M1 A P1 P2 P3 ... Pn
 
 ;;; where the Pi swap columns
 ;;;   L and M are as before but U includes the Pi
@@ -278,38 +278,38 @@
 (defun matrix-decompose (A L P)
   (let* ((n  (array-dimension A 0)))
     (declare (fixnum n))
-    
+
     (do ((i 0 (1+ i)))
-	((>= i n))
+        ((>= i n))
       (declare (fixnum i))
-      
+
       ;; *** swap rows as necessary
 
       ;; "compute" Mi in our heads -- it's the identity plus the (-$ mki) terms
-      
+
       ;; now set A to Mi * A
       ;;   because Mi is an identity in the upper left and lower right
       ;;   do for each row beyond i
       ;;     do for every element
-      
+
       (do ((k   (1+ i) (1+ k))			; Mi is the identity for first i rows
-	   (mki 0.0))
-	  ((>= k n))
-	(declare (fixnum k) (type float mki))
-	(setq mki (/ (aref A k i)
-		     (aref A i i)))
-	
-	(do ((j  i (1+ j)))			; calculate all the columns
-	    ((>= j n))
-	  (declare (fixnum j))
-	  (setf (aref A k j)
-		(+ (aref A k j)			; main diagonal of Mi has a 1
-		   (* (- mki)			; col i has only other nonzero element
-		      (aref A i j)))))
-	
-	(setf (aref L  k i) mki )		; clever L calculation -- see Luenberger
-						; SETF after DO so L can be eq A
-	))
+           (mki 0.0))
+          ((>= k n))
+        (declare (fixnum k) (type float mki))
+        (setq mki (/ (aref A k i)
+                     (aref A i i)))
+
+        (do ((j  i (1+ j)))			; calculate all the columns
+            ((>= j n))
+          (declare (fixnum j))
+          (setf (aref A k j)
+                (+ (aref A k j)			; main diagonal of Mi has a 1
+                   (* (- mki)			; col i has only other nonzero element
+                      (aref A i j)))))
+
+        (setf (aref L  k i) mki )		; clever L calculation -- see Luenberger
+        ; SETF after DO so L can be eq A
+        ))
     L))
 
 
@@ -323,7 +323,7 @@
 ;;; Take the system Ax=b
 ;;; Factor A into LUP
 ;;;   then LUPx=b which can be associated as L(U(Px))=b
-;;;     solve Ly=b 
+;;;     solve Ly=b
 ;;;     solve Uz=y
 ;;;     solve Px=z
 
@@ -353,51 +353,51 @@
   (dotimes (m n)
     (declare (fixnum m))
     (rotatef (aref matrix i m)
-	     (aref matrix k m))))
+             (aref matrix k m))))
 
 (defun matrix-swap-cols (matrix n j k)
   (declare (fixnum n j k))
   (dotimes (m n)
     (declare (fixnum m))
     (rotatef (aref matrix m j)
-	     (aref matrix m k))))
+             (aref matrix m k))))
 
 (proclaim '(inline matrix-swap-rows
-		   matrix-swap-cols))
+            matrix-swap-cols))
 
 
 ;;;; Matrix-Inversion:  Matrix Process
 
 (defun matrix-process (a n k pivot)
   (declare (fixnum n k)
-	   (type float pivot))
-  
+           (type float pivot))
+
   (dotimes (i n)				; divide column by minus pivot
     (declare (fixnum i))
     (setf (aref a k i)
-	  (/ (aref a k i) (- pivot))))
+          (/ (aref a k i) (- pivot))))
   (setf (aref a k k) pivot)			; got smashed (don't need this statement)
-  
+
   (dotimes (i n)				; reduce matrix
     (declare (fixnum i))
     (if (not (= i k))
-	(do ((temp (aref a k i))
-	     (j    0 (1+ j)))
-	    ((>= j n))
-	  (declare (fixnum j) (type float temp))
-	  (if (not (= j k))
-	      (setf (aref a j i)
-		    (+ (* temp (aref a j k))
-		       (aref a j i)))))))
-  
+        (do ((temp (aref a k i))
+             (j    0 (1+ j)))
+            ((>= j n))
+          (declare (fixnum j) (type float temp))
+          (if (not (= j k))
+              (setf (aref a j i)
+                    (+ (* temp (aref a j k))
+                       (aref a j i)))))))
+
   (dotimes (j n)				; divide row by pivot
     (declare (fixnum j))
     (setf (aref a j k)
-	  (/ (aref a j k) pivot)))
-  
+          (/ (aref a j k) pivot)))
+
   ;; replace pivot by reciprocal
   (setf (aref a k k) (/ 1.0 pivot))
-  
+
   nil)
 
 
@@ -418,35 +418,35 @@
   (if (>= k n)
       1.0					; we are done
       (let* ((i k)				; find largest A[i,j]
-	     (j k)				;   in lower right corner
-	     (max (abs (aref matrix i j))))
-	(declare (fixnum i j) (type float max))
-	
-	(do ((i0 k (1+ i0)))			; find the max
-	    ((>= i0 n))
-	  (do ((j0 k (1+ j0)))
-	      ((>= j0 n))
-	    (if (> (abs (aref matrix i0 j0)) max)
-		(setq i i0 j j0 max (abs (aref matrix i0 j0))))))
-	
-	(let ((pivot (aref matrix i j))
-	      (d     0.0))
-	  (declare (type float pivot d))
-	  (if (= pivot 0.0)
-	      0.0				; singular matrix!
-	      (progn
-		(matrix-swap-rows matrix n i k)	; put pivot in right place
-		(matrix-swap-cols matrix n j k)	; matrix = C A R
-		
-		(matrix-process matrix n k pivot)	; invert(C A R)
-		;; determinant is the recursive product of pivots
-		(setq d (* pivot (matrix-subr matrix n (1+ k))))
-		
-		(matrix-swap-rows matrix n j k)	; undo permutation
-		(matrix-swap-cols matrix n i k)	; matrix = R (CAR)**-1 C
-		
-		d))
-	  ))))
+             (j k)				;   in lower right corner
+             (max (abs (aref matrix i j))))
+        (declare (fixnum i j) (type float max))
+
+        (do ((i0 k (1+ i0)))			; find the max
+            ((>= i0 n))
+          (do ((j0 k (1+ j0)))
+              ((>= j0 n))
+            (if (> (abs (aref matrix i0 j0)) max)
+                (setq i i0 j j0 max (abs (aref matrix i0 j0))))))
+
+        (let ((pivot (aref matrix i j))
+              (d     0.0))
+          (declare (type float pivot d))
+          (if (= pivot 0.0)
+              0.0				; singular matrix!
+              (progn
+                (matrix-swap-rows matrix n i k)	; put pivot in right place
+                (matrix-swap-cols matrix n j k)	; matrix = C A R
+
+                (matrix-process matrix n k pivot)	; invert(C A R)
+                ;; determinant is the recursive product of pivots
+                (setq d (* pivot (matrix-subr matrix n (1+ k))))
+
+                (matrix-swap-rows matrix n j k)	; undo permutation
+                (matrix-swap-cols matrix n i k)	; matrix = R (CAR)**-1 C
+
+                d))
+          ))))
 
 (defun matrix-inverse (matrix)
   (matrix-subr matrix (array-dimension matrix 0) 0))
@@ -467,79 +467,79 @@
 
 (defun matrix-multiply-mat-mat (b c &optional a)
   (let ((l (array-dimension b 0))		; rows of B
-	(m (array-dimension c 0))		; rows of C
-	(n (array-dimension c 1)))		; cols of C
+        (m (array-dimension c 0))		; rows of C
+        (n (array-dimension c 1)))		; cols of C
     (declare (fixnum l m n))
-    
+
     (or a (setq a (make-array (list l n)
-			      :element-type 'float :initial-element 0.0)))
-    
+                              :element-type 'float :initial-element 0.0)))
+
     (if (or (not (= l (array-dimension a 0)))
-	    (not (= n (array-dimension a 1)))
-	    (not (= m (array-dimension b 1))))
-	(error "MATRIX-MULTIPLY given bad dimensions"))
-    
+            (not (= n (array-dimension a 1)))
+            (not (= m (array-dimension b 1))))
+        (error "MATRIX-MULTIPLY given bad dimensions"))
+
     (do ((i 0 (1+ i)))
-	((>= i l) a)
+        ((>= i l) a)
       (declare (fixnum i))
       (do ((j 0 (1+ j))
-	   (sum 0.0 0.0))
-	  ((>= j n))
-	(declare (fixnum j)
-		 (float sum))
-	(do ((k 0 (1+ k)))
-	    ((>= k m))
-	  (declare (fixnum k))
-	  (setq sum (+ sum (* (aref b i k)
-			      (aref c k j)))))
-	(setf (aref a i j) sum)))
+           (sum 0.0 0.0))
+          ((>= j n))
+        (declare (fixnum j)
+                 (float sum))
+        (do ((k 0 (1+ k)))
+            ((>= k m))
+          (declare (fixnum k))
+          (setq sum (+ sum (* (aref b i k)
+                              (aref c k j)))))
+        (setf (aref a i j) sum)))
     ))
 
 
 ;;;; Multiply ROW x MAT and MAT x COL
 
 ;;; ROW * MAT
-;;; 
+;;;
 (defun matrix-multiply-row-mat (b c &optional a)
   (let ((n (array-dimension c 1))
-	(m (array-dimension b 0)))
+        (m (array-dimension b 0)))
     (declare (fixnum m n))
     (or a (setq a (make-array n
-			      :element-type 'float :initial-element 0.0)))
+                              :element-type 'float :initial-element 0.0)))
     (do ((i 0 (1+ i)))
-	((>= i n) a)
+        ((>= i n) a)
       (declare (type fixnum i))
       (do ((j 0 (1+ j))
-	   (sum 0.0))
-	  ((>= j m)
-	   (setf (aref a i) sum)
-	   nil)
-	(declare (fixnum j)
-		 (float sum))
-	(setq sum (+ sum (* (aref b j)
-			    (aref c j i))))))))
+           (sum 0.0))
+          ((>= j m)
+           (setf (aref a i) sum)
+           nil)
+        (declare (fixnum j)
+                 (float sum))
+        (setq sum (+ sum (* (aref b j)
+                            (aref c j i))))))))
 
 ;;; MAT * COL
 ;;;
 (defun matrix-multiply-mat-col (b c &optional a)
   (let ((n (array-dimension b 0))
-	(m (array-dimension c 0)))
+        (m (array-dimension c 0)))
     (declare (fixnum m n))
 
     (or a (setq a (make-array n
-			      :element-type 'float :initial-element 0.0)))
+                              :element-type 'float :initial-element 0.0)))
     (do ((i 0 (1+ i)))
-	((>= i n) a)
+        ((>= i n) a)
       (declare (fixnum i))
       (do ((j 0 (1+ j))
-	   (sum 0.0))
-	  ((>= j m)
-	   (setf (aref a i) sum)
-	   nil)
-	(declare (fixnum j)
-		 (float sum))
-	(setq sum (+ sum (* (aref b i j)
-			    (aref c j))))))
+           (sum 0.0))
+          ((>= j m)
+           (setf (aref a i) sum)
+           nil)
+        (declare (fixnum j)
+                 (float sum))
+        (setq sum (+ sum (* (aref b i j)
+                            (aref c j))))))
     ))
 
 
@@ -549,32 +549,32 @@
 
 (defun matrix-multiply-num-mat (b c &optional a)
   (cond ((numberp c) (* b c))
-	((= (array-rank c) 1)
-	 ;; times a vector
-	 (or a (setq a (make-array (array-dimension c 0)
-				   :element-type 'float :initial-element 0.0)))
-	 (do ((i 0 (1+ i))
-	      (n (array-dimension c 0)))
-	     ((>= i n) a)
-	   (declare (fixnum i n))
-	   (setf (aref a i)
-		 (* b (aref c i)))))
-	((= (array-rank c) 2)
-	 ;; times a matrix
-	 (or a (setq a (make-array (list (array-dimension c 0) (array-dimension c 1))
-				   :element-type 'float :initial-element 0.0)))
-	 (do ((i 0 (1+ i))
-	      (n (array-dimension c 0)))
-	     ((>= i n) a)
-	   (declare (fixnum i n))
-	   (do ((j 0 (1+ j))
-		(m (array-dimension c 0)))
-	       ((>= j m))
-	     (declare (fixnum j m))
-	     (setf (aref a i j)
-		   (* b (aref c i j))))))
-	(t (error "MATMUL-SCALAR not given vector or matrix"))))
-  
+        ((= (array-rank c) 1)
+         ;; times a vector
+         (or a (setq a (make-array (array-dimension c 0)
+                                   :element-type 'float :initial-element 0.0)))
+         (do ((i 0 (1+ i))
+              (n (array-dimension c 0)))
+             ((>= i n) a)
+           (declare (fixnum i n))
+           (setf (aref a i)
+                 (* b (aref c i)))))
+        ((= (array-rank c) 2)
+         ;; times a matrix
+         (or a (setq a (make-array (list (array-dimension c 0) (array-dimension c 1))
+                                   :element-type 'float :initial-element 0.0)))
+         (do ((i 0 (1+ i))
+              (n (array-dimension c 0)))
+             ((>= i n) a)
+           (declare (fixnum i n))
+           (do ((j 0 (1+ j))
+                (m (array-dimension c 0)))
+               ((>= j m))
+             (declare (fixnum j m))
+             (setf (aref a i j)
+                   (* b (aref c i j))))))
+        (t (error "MATMUL-SCALAR not given vector or matrix"))))
+
 
 ;;;; Matrix Multiply
 
@@ -589,24 +589,24 @@
 
 (defun matrix-multiply (b c &optional a)
   (cond ((numberp b) (matrix-multiply-num-mat b c a))
-	((numberp c) (matrix-multiply-num-mat c b a))
-	((and (= 2 (array-rank b))
-	      (= 2 (array-rank c))
-	      (= (array-dimension b 1)
-		 (array-dimension c 0)))
-	 (matrix-multiply-mat-mat b c a))
-	((and (= 1 (array-rank b))
-	      (= 2 (array-rank c))
-	      (= (array-dimension b 0)
-		 (array-dimension c 0)))
-	 (matrix-multiply-row-mat b c a))
-	((and (= 2 (array-rank b))
-	      (= 1 (array-rank c))
-	      (= (array-dimension b 1)
-		 (array-dimension c 0)))
-	 (matrix-multiply-mat-col b c a))
-	(t (error "MATMUL blew it"))
-	))
+        ((numberp c) (matrix-multiply-num-mat c b a))
+        ((and (= 2 (array-rank b))
+              (= 2 (array-rank c))
+              (= (array-dimension b 1)
+                 (array-dimension c 0)))
+         (matrix-multiply-mat-mat b c a))
+        ((and (= 1 (array-rank b))
+              (= 2 (array-rank c))
+              (= (array-dimension b 0)
+                 (array-dimension c 0)))
+         (matrix-multiply-row-mat b c a))
+        ((and (= 2 (array-rank b))
+              (= 1 (array-rank c))
+              (= (array-dimension b 1)
+                 (array-dimension c 0)))
+         (matrix-multiply-mat-col b c a))
+        (t (error "MATMUL blew it"))
+        ))
 
 
 ;;;; Matrix Inversion Tests
@@ -614,107 +614,107 @@
 (eval-when (eval)
 |#
 #|
-  (defun matrix-random-vector (n)
-    (declare (fixnum n))
-    (let ((v (make-array n :element-type 'float :initial-element 0.0)))
-      (declare (type (array float (*)) v))
-      (do ((i 0 (1+ i)))
-	  ((>= i n) v)
-	(declare (fixnum i))
-	(setf (aref v i) (random 1.0)))
-      v))
-  
-  (defun matrix-random-matrix (n)
-    (declare (fixnum n))
-    (let ((A (make-array (list n n) :element-type 'float :initial-element 0.0)))
-      (declare (type (array float (* *)) A))
-      (do ((i 0 (1+ i)))
-	  ((>= i n))
-	(declare (fixnum i))
-	(do ((j 0 (1+ j)))
-	    ((>= j n))
-	  (declare (fixnum j))
-	  (setf (aref A i j) (random 1.0))))
-      A))
-  
-  (defun matrix-solve-lower (n)
-    (declare (fixnum n))
-    (let ((L (make-array (list n n) :element-type 'float :initial-element 0.0))
-	  (x (make-array n          :element-type 'float :initial-element 0.0))
-	  (b (matrix-random-vector n)))
-      (declare (type (array float (* *)) L)
-	       (type (array float   (*)) x b))
-      (do ((i 0 (1+ i)))
-	  ((>= i n))
-	(declare (fixnum i))
-	(do ((j 0 (1+ j)))
-	    ((> j i))
-	  (declare (fixnum j))
-	  (setf (aref L i j) (random 1.0))))
-      (matrix-print L)
-      (matrix-print b)
-      (replace x b)
-      (matrix-solve-triangle-lower L x)
-      (matrix-print x)
-      (matrix-print (matrix-multiply L x))))
-  
-  (defun matrix-solve-upper (n)
-    (declare (fixnum n))
-    (let ((U (make-array (list n n) :element-type 'float :initial-element 0.0))
-	  (x (make-array n          :element-type 'float :initial-element 0.0))
-	  (b (matrix-random-vector n)))
-      (declare (type (array float (* *)) U)
-	       (type (array float   (*)) x b))
-      (do ((i 0 (1+ i)))
-	  ((>= i n))
-	(declare (fixnum i))
-	(do ((j i (1+ j)))
-	    ((>= j n))
-	  (declare (fixnum j))
-	  (setf (aref U i j) (random 1.0))))
-      (matrix-print U)
-      (matrix-print b)
-      (replace x b)
-      (matrix-solve-triangle-upper U x)
-      (matrix-print x)
-      (matrix-print (matrix-multiply U x))))
-  
-  (defun matrix-decompose-random-matrix (n)
-    (declare (fixnum n))
-    (let* ((A (matrix-random-matrix n)))
-      (declare (type (array float (* *)) A))
-      (matrix-print A)
-      (let ((L (matrix-decompose A)))
-	(declare (type (array float (* *)) L))
-	(matrix-print L)
-	(matrix-print A)
-	(matrix-print (matrix-multiply-mat-mat L A)))))
-  
-  (defun matrix-solve-test (n)
-    (declare (fixnum n))
-    (let ((A (matrix-random-matrix n))
-	  (b (matrix-random-vector n)))
-      (declare (type (array float (* *)) A)
-	       (type (array float   (*)) b))
-      (matrix-print A)
-      (matrix-print b)
-      (let ((A-copy (matrix-copy A))
-	    (x      (matrix-copy b)))
-	(declare (type (array float (* *)) A-copy)
-		 (type (array float   (*)) x))
-	(matrix-solve A-copy x)
-	(matrix-print x)
-	(matrix-print (matrix-multiply A x)))))
-  
-  (defun matrix-invert-random-matrix (n)
-    (declare (fixnum n))
-    (let* ((A (matrix-random-matrix n))
-	   (B (matrix-copy A)))
-      (declare (type (array float (* *)) A B))
-      (matrix-print A)
-      (print (list 'det (matrix-inverse B)))
-      (matrix-print B)
-      (matrix-print (matrix-multiply-mat-mat A B))))
-  
-  )
+(defun matrix-random-vector (n)
+(declare (fixnum n))
+(let ((v (make-array n :element-type 'float :initial-element 0.0)))
+(declare (type (array float (*)) v))
+(do ((i 0 (1+ i)))
+((>= i n) v)
+(declare (fixnum i))
+(setf (aref v i) (random 1.0)))
+v))
+
+(defun matrix-random-matrix (n)
+(declare (fixnum n))
+(let ((A (make-array (list n n) :element-type 'float :initial-element 0.0)))
+(declare (type (array float (* *)) A))
+(do ((i 0 (1+ i)))
+((>= i n))
+(declare (fixnum i))
+(do ((j 0 (1+ j)))
+((>= j n))
+(declare (fixnum j))
+(setf (aref A i j) (random 1.0))))
+A))
+
+(defun matrix-solve-lower (n)
+(declare (fixnum n))
+(let ((L (make-array (list n n) :element-type 'float :initial-element 0.0))
+(x (make-array n          :element-type 'float :initial-element 0.0))
+(b (matrix-random-vector n)))
+(declare (type (array float (* *)) L)
+(type (array float   (*)) x b))
+(do ((i 0 (1+ i)))
+((>= i n))
+(declare (fixnum i))
+(do ((j 0 (1+ j)))
+((> j i))
+(declare (fixnum j))
+(setf (aref L i j) (random 1.0))))
+(matrix-print L)
+(matrix-print b)
+(replace x b)
+(matrix-solve-triangle-lower L x)
+(matrix-print x)
+(matrix-print (matrix-multiply L x))))
+
+(defun matrix-solve-upper (n)
+(declare (fixnum n))
+(let ((U (make-array (list n n) :element-type 'float :initial-element 0.0))
+(x (make-array n          :element-type 'float :initial-element 0.0))
+(b (matrix-random-vector n)))
+(declare (type (array float (* *)) U)
+(type (array float   (*)) x b))
+(do ((i 0 (1+ i)))
+((>= i n))
+(declare (fixnum i))
+(do ((j i (1+ j)))
+((>= j n))
+(declare (fixnum j))
+(setf (aref U i j) (random 1.0))))
+(matrix-print U)
+(matrix-print b)
+(replace x b)
+(matrix-solve-triangle-upper U x)
+(matrix-print x)
+(matrix-print (matrix-multiply U x))))
+
+(defun matrix-decompose-random-matrix (n)
+(declare (fixnum n))
+(let* ((A (matrix-random-matrix n)))
+(declare (type (array float (* *)) A))
+(matrix-print A)
+(let ((L (matrix-decompose A)))
+(declare (type (array float (* *)) L))
+(matrix-print L)
+(matrix-print A)
+(matrix-print (matrix-multiply-mat-mat L A)))))
+
+(defun matrix-solve-test (n)
+(declare (fixnum n))
+(let ((A (matrix-random-matrix n))
+(b (matrix-random-vector n)))
+(declare (type (array float (* *)) A)
+(type (array float   (*)) b))
+(matrix-print A)
+(matrix-print b)
+(let ((A-copy (matrix-copy A))
+(x      (matrix-copy b)))
+(declare (type (array float (* *)) A-copy)
+(type (array float   (*)) x))
+(matrix-solve A-copy x)
+(matrix-print x)
+(matrix-print (matrix-multiply A x)))))
+
+(defun matrix-invert-random-matrix (n)
+(declare (fixnum n))
+(let* ((A (matrix-random-matrix n))
+(B (matrix-copy A)))
+(declare (type (array float (* *)) A B))
+(matrix-print A)
+(print (list 'det (matrix-inverse B)))
+(matrix-print B)
+(matrix-print (matrix-multiply-mat-mat A B))))
+
+)
 |#

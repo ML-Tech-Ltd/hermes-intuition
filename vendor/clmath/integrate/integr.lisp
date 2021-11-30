@@ -25,15 +25,15 @@
 
 (DEFUN INTEGRATE-TRAPEZOIDAL (F X0 XM M)
   (DECLARE (FLOAT X0 XM SUM H STEP STEPS)
-	   (FIXNUM M))
+           (FIXNUM M))
   (DO ((SUM   0.0)
-       (H     (/ (- XM X0) (float M)))  
+       (H     (/ (- XM X0) (float M)))
        (STEP  1.0 (1+ STEP))
        (STEPS (float M)))
       ((>= STEP STEPS)
        (* H (+ (* 0.5 (FUNCALL F X0))
-		 SUM
-		 (* 0.5 (FUNCALL F XM)))))
+               SUM
+               (* 0.5 (FUNCALL F XM)))))
     (SETQ SUM (+ SUM (FUNCALL F (+ X0 (* STEP H)))))))
 
 
@@ -46,7 +46,7 @@
 
 (DEFUN INTEGRATE-SIMPSON (F X0 XM M)
   (DECLARE (FLOAT X0 XM SUM-ODD SUM-EVEN H STEP)
-	   (FIXNUM I M))
+           (FIXNUM I M))
   (COND ((ODDP M) (SETQ M (1+ M))))
   (DO ((SUM-EVEN 0.0)
        (SUM-ODD  0.0)
@@ -55,14 +55,14 @@
        (STEP  1.0 (1+ STEP)))
       ((>= I M)
        (* (/ H 3.0)
-	   (+ (FUNCALL F X0)
-	       (* 4.0 SUM-ODD)
-	       (* 2.0 SUM-EVEN)
-	       (FUNCALL F XM))))
+          (+ (FUNCALL F X0)
+             (* 4.0 SUM-ODD)
+             (* 2.0 SUM-EVEN)
+             (FUNCALL F XM))))
     (COND ((ODDP I)
-	   (SETQ SUM-ODD  (+ SUM-ODD  (FUNCALL F (+ X0 (* STEP H))))))
-	  (T
-	   (SETQ SUM-EVEN (+ SUM-EVEN (FUNCALL F (+ X0 (* STEP H)))))))
+           (SETQ SUM-ODD  (+ SUM-ODD  (FUNCALL F (+ X0 (* STEP H))))))
+          (T
+           (SETQ SUM-EVEN (+ SUM-EVEN (FUNCALL F (+ X0 (* STEP H)))))))
     ))
 
 
@@ -75,18 +75,18 @@
 
 (DEFUN INTEGRATE-SIMPSON-RECURSIVE (F X0 XM EPS)
   (DECLARE (FLOAT X0 XM SUM-ODD SUM-EVEN H STEP F0 F1 FM INT INT-LAST)
-	   (FIXNUM I M))
+           (FIXNUM I M))
   (LET ((F0 (FUNCALL F X0))
-	(F1 (FUNCALL F (* 0.5 (+ X0 XM))))
-	(FM (FUNCALL F XM))
-	(H  (* 0.5 (- XM X0))))
+        (F1 (FUNCALL F (* 0.5 (+ X0 XM))))
+        (FM (FUNCALL F XM))
+        (H  (* 0.5 (- XM X0))))
 
     (DO ((M          2)
-	 (SUM-EVEN 0.0)
-	 (SUM-ODD   F1)
-	 (INT-LAST 0.0)
-	 (INT      (* (/ H 3.0) (+ F0 (* 4.0 F1) FM))))
-	(NIL)
+         (SUM-EVEN 0.0)
+         (SUM-ODD   F1)
+         (INT-LAST 0.0)
+         (INT      (* (/ H 3.0) (+ F0 (* 4.0 F1) FM))))
+        (NIL)
 
       (SETQ INT-LAST INT)
       (SETQ M (*   M 2))
@@ -94,18 +94,18 @@
       (SETQ SUM-EVEN (+ SUM-ODD SUM-EVEN))
       (SETQ SUM-ODD  0.0)
       (DO ((I 1 (+ I 2))
-	   (STEP 1.0 (+ STEP 2.0)))
-	  ((>= I M))
-	(SETQ SUM-ODD (+ SUM-ODD (FUNCALL F (* H STEP)))))
+           (STEP 1.0 (+ STEP 2.0)))
+          ((>= I M))
+        (SETQ SUM-ODD (+ SUM-ODD (FUNCALL F (* H STEP)))))
 
       (SETQ INT (* (/ H 3.0)
-		    (+ F0
-			(* 4.0 SUM-ODD)
-			(* 2.0 SUM-EVEN)
-			FM)))
+                   (+ F0
+                      (* 4.0 SUM-ODD)
+                      (* 2.0 SUM-EVEN)
+                      FM)))
 
       (COND ((< (ABS (- INT INT-LAST)) EPS)
-	     (RETURN INT-LAST)))
+             (RETURN INT-LAST)))
       )))
 
 
@@ -114,22 +114,22 @@
 (EVAL-WHEN (EVAL)
 |#
 #|
-  (DEFUN TEST0 ()
-    (INTEGRATE-TRAPEZOIDAL '(LAMBDA (X) (* 3.0 (expt X 2)))
-			   0.0
-			   1.0
-			   10))
-  (DEFUN TEST1 ()
-    (INTEGRATE-SIMPSON '(LAMBDA (X) (* 3.0 (expt X 2)))
-			   0.0
-			   1.0
-			   10))
-  (DEFUN TEST2 ()
-    (FORMAT T "~%ANSWER ~E"  (SIN 1.0))
-    (INTEGRATE-SIMPSON-RECURSIVE
-     '(LAMBDA (X) (COS X))
-     0.0
-     1.0
-     0.001))
-  )
+(DEFUN TEST0 ()
+(INTEGRATE-TRAPEZOIDAL '(LAMBDA (X) (* 3.0 (expt X 2)))
+0.0
+1.0
+10))
+(DEFUN TEST1 ()
+(INTEGRATE-SIMPSON '(LAMBDA (X) (* 3.0 (expt X 2)))
+0.0
+1.0
+10))
+(DEFUN TEST2 ()
+(FORMAT T "~%ANSWER ~E"  (SIN 1.0))
+(INTEGRATE-SIMPSON-RECURSIVE
+'(LAMBDA (X) (COS X))
+0.0
+1.0
+0.001))
+)
 |#

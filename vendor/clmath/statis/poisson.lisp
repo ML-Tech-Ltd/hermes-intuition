@@ -23,7 +23,7 @@
 ;;;  that this notice is not removed.
 
 ;;; Bugs and Fixes
-;;;   
+;;;
 
 (in-package "CLMATH")
 
@@ -33,24 +33,24 @@
 
 (defun poisson-density (n lambda)
   (cond ((> lambda 0.0)
-	 (/ (* (expt lambda n) (exp (- lambda)))
-	    (float (factorial n))))
-	((= lambda 0.0)
-	 (cond ((= n 0) 1.0)
-	       (t       0.0)))
-	((< lambda 0.0) (ERROR "Negative lambda to POISSON-DENSITY"))))
+         (/ (* (expt lambda n) (exp (- lambda)))
+            (float (factorial n))))
+        ((= lambda 0.0)
+         (cond ((= n 0) 1.0)
+               (t       0.0)))
+        ((< lambda 0.0) (ERROR "Negative lambda to POISSON-DENSITY"))))
 
 #|
 Should be fun to optimize this function by procedure integration
 and strength reduction.  Do people use recursion optimization?
 
 (defun poisson-cumulative (n time)
-  (do ((prob 0.0)
-       (i    0  (1+ i)))
-      ((> i n) prob)
-    (declare (flonum prob)
-	     (fixnum i))
-    (setq prob (+$ prob (poisson-density i time)))))
+(do ((prob 0.0)
+(i    0  (1+ i)))
+((> i n) prob)
+(declare (flonum prob)
+(fixnum i))
+(setq prob (+$ prob (poisson-density i time)))))
 
 |#
 
@@ -61,9 +61,9 @@ and strength reduction.  Do people use recursion optimization?
        (i    0  (1+ i)))
       ((> i n) (* (exp (- time)) prob))
     (declare (float prob t**i)
-	     (fixnum i fi))
+             (fixnum i fi))
     (setq prob (+ prob
-		  (/ t**i (float fi))))))
+                  (/ t**i (float fi))))))
 
 
 ;;;; Random Number Generator -- POISSON
@@ -78,22 +78,22 @@ and strength reduction.  Do people use recursion optimization?
        (p 0.0)
        (i 0 (1+ i)))
       ((progn (setq p (+ p (poisson-density i lmbd)))
-	      (< u p))
+              (< u p))
        i)
     (declare (fixnum i)
-	     (float u p))
+             (float u p))
     ))
 
 #|
 (eval-when (eval)
 |#
 #|
-  (defun po-test (lam n)
-    (do ((i 0 (1+ i))
-	 (s 0))
-	((>= i n)
-	 (/ (float s) (float n)))
-      (declare (fixnum i s))
-      (setq s (+ s (poisson-random-number lam)))))
-  )
+(defun po-test (lam n)
+(do ((i 0 (1+ i))
+(s 0))
+((>= i n)
+(/ (float s) (float n)))
+(declare (fixnum i s))
+(setq s (+ s (poisson-random-number lam)))))
+)
 |#

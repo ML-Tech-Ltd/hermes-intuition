@@ -24,38 +24,38 @@
 
 ;;; k'(m) = k(1-m)
 
-;;; 0 <= M < 1 
+;;; 0 <= M < 1
 
 (defun elliptic-integral-k (m)
   (elliptic-integral-kC (- 1.0 (float m))))
 
 (defun elliptic-integral-kC (m) 			;eps < 2E-8
   (+ (poly m
-	   1.38629436112
-	   0.09666344259
-	   0.03590092383
-	   0.03742563713
-	   0.01451196212)
+           1.38629436112
+           0.09666344259
+           0.03590092383
+           0.03742563713
+           0.01451196212)
      (* (- (log m))
-	(poly m
-	      0.50000000000
-	      0.12498593597
-	      0.06880248576
-	      0.03328355346
-	      0.00441787012))))
+        (poly m
+              0.50000000000
+              0.12498593597
+              0.06880248576
+              0.03328355346
+              0.00441787012))))
 
 #|
 
 (defun elliptic-integral-kC (m)				;eps < 3E-5
-  (+$ (poly m
-	    1.3862944
-	    0.1119723
-	    0.0725296)
-      (*$ (-$ (log m))
-	  (poly m
-		0.5000000
-		0.1213478
-		0.0288729))))
+(+$ (poly m
+1.3862944
+0.1119723
+0.0725296)
+(*$ (-$ (log m))
+(poly m
+0.5000000
+0.1213478
+0.0288729))))
 
 K(0.1) = 1.61244 13487
 K(0.9) = 2.57809 21133
@@ -72,30 +72,30 @@ K(0.9) = 2.57809 21133
 
 (defun elliptic-integral-eC (m) 			;eps < 2E-8
   (+ (poly m
-	   1.00000000000
-	   0.44325141463
-	   0.06260601220
-	   0.04757383546
-	   0.01736506451)
+           1.00000000000
+           0.44325141463
+           0.06260601220
+           0.04757383546
+           0.01736506451)
      (* (- (log m))
-	(poly m
-	      0.00000000000
-	      0.24998368310
-	      0.09200180037
-	      0.04069697526
-	      0.00526449639))))
+        (poly m
+              0.00000000000
+              0.24998368310
+              0.09200180037
+              0.04069697526
+              0.00526449639))))
 
 #|
 (defun elliptic-integral-eC (m)				;eps < 3E-5?
-  (+ (poly m
-	   1.0000000
-	   0.4630151
-	   0.1077812)
-     (* (-$ (log m))
-	(poly m
-	      0.0000000
-	      0.2452727
-	      0.0412496))))
+(+ (poly m
+1.0000000
+0.4630151
+0.1077812)
+(* (-$ (log m))
+(poly m
+0.0000000
+0.2452727
+0.0412496))))
 
 E(0.1) = 1.53075 7637
 E(0.9) = 1.10477 4733
@@ -112,33 +112,33 @@ E(0.9) = 1.10477 4733
 (defun elliptic-sine (u M)
   (declare (single-float K K1 v q v2N1 qN05 sn))
   (let* ((K   (elliptic-integral-k M))
-	 (K1  (elliptic-integral-kc M))
-	 (v   (/ (* (float pi 1.0) u) (* 2.0 K)))
-	 (q   (exp (- (/ (* (float pi 1.0) K1) K)))))
+         (K1  (elliptic-integral-kc M))
+         (v   (/ (* (float pi 1.0) u) (* 2.0 K)))
+         (q   (exp (- (/ (* (float pi 1.0) K1) K)))))
     (do ((v2N1 v (+ v2N1 v v))			;(2N+1)v
-	 (qN05 (sqrt q) (* qN05 q))		;q^(N + 0.5)
-	 (sn 0.0) )
-	((progn (setq sn (+ sn (/ (* qN05 (sin v2N1))
-				  (- 1.0 (* qN05 qN05)))))
-		(< qN05 1.0E-8))
-	 (/ (* (* 2.0 (float pi 1.0)) sn)
-	    (* (sqrt M) K)))
+         (qN05 (sqrt q) (* qN05 q))		;q^(N + 0.5)
+         (sn 0.0) )
+        ((progn (setq sn (+ sn (/ (* qN05 (sin v2N1))
+                                  (- 1.0 (* qN05 qN05)))))
+                (< qN05 1.0E-8))
+         (/ (* (* 2.0 (float pi 1.0)) sn)
+            (* (sqrt M) K)))
       )))
 
 (defun elliptic-cosine (u M)
   (declare (single-float K K1 v q v2N1 qN05 sn))
   (let* ((K   (elliptic-integral-k M))
-	 (K1  (elliptic-integral-kc M))
-	 (v   (/ (* (float pi 1.0) u) (* 2.0 K)))
-	 (q   (exp (- (/ (* (float pi 1.0) K1) K)))))
+         (K1  (elliptic-integral-kc M))
+         (v   (/ (* (float pi 1.0) u) (* 2.0 K)))
+         (q   (exp (- (/ (* (float pi 1.0) K1) K)))))
     (do ((v2N1 v (+ v2N1 v v))			;(2N+1)v
-	 (qN05 (sqrt q) (* qN05 q))		;q^(N + 0.5)
-	 (sn 0.0) )
-	((progn (setq sn (+ sn (/ (* qN05 (cos v2N1))
-				  (+ 1.0 (* qN05 qN05)))))
-		(< qN05 1.0E-6))
-	 (/ (* (* 2.0 (float pi 1.0)) sn)
-	    (* (sqrt M) K)))
+         (qN05 (sqrt q) (* qN05 q))		;q^(N + 0.5)
+         (sn 0.0) )
+        ((progn (setq sn (+ sn (/ (* qN05 (cos v2N1))
+                                  (+ 1.0 (* qN05 qN05)))))
+                (< qN05 1.0E-6))
+         (/ (* (* 2.0 (float pi 1.0)) sn)
+            (* (sqrt M) K)))
       )))
 
 
@@ -162,13 +162,13 @@ E(0.9) = 1.10477 4733
 (defun sntest (m)
   (setq m (float m))
   (let* ((K05  (/ (elliptic-integral-k m) 2.0))
-	 (SQM1 (sqrt (- 1.0  M)))
-	 (SN   (elliptic-sine K05 M))
-	 (CN   (elliptic-cosine K05 M)))
+         (SQM1 (sqrt (- 1.0  M)))
+         (SN   (elliptic-sine K05 M))
+         (CN   (elliptic-cosine K05 M)))
     (print (list 'SN SN
-		 (- SN (/ 1.0
-			  (sqrt (+ 1.0 SQM1))))))
+                 (- SN (/ 1.0
+                          (sqrt (+ 1.0 SQM1))))))
     (print (list 'CN CN
-		 (- CN (/ (sqrt SQM1)
-			  (sqrt (+ 1.0 SQM1)))))))
+                 (- CN (/ (sqrt SQM1)
+                          (sqrt (+ 1.0 SQM1)))))))
   nil)

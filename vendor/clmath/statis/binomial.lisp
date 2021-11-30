@@ -23,7 +23,7 @@
 ;;;  that this notice is not removed.
 
 ;;; Bugs and Fixes
-;;;   
+;;;
 
 (in-package "CLMATH")
 
@@ -43,17 +43,17 @@
 ;;;
 (defun binomial-density (k n p)
   (exp (+ (float (dlog-choose n k) p)
-	  (*      k  (log        p ))
-	  (* (- n k) (log (- 1.0 p))))))
+          (*      k  (log        p ))
+          (* (- n k) (log (- 1.0 p))))))
 
 #|
 
 (defun beta-choose (n k)
-  (/ 1.0 (beta-function (+ (- n k) 1) (+ k 1)) (+ n 1)))
+(/ 1.0 (beta-function (+ (- n k) 1) (+ k 1)) (+ n 1)))
 
 (defun bin-test (k n p)
-  (list (binomial-density-naive k n p)
-	(binomial-density       k n p)))
+(list (binomial-density-naive k n p)
+(binomial-density       k n p)))
 
 (bin-test 3 9 0.1d-8)
 
@@ -70,7 +70,7 @@
        (s 0.0))
       ((> i x) s)
     (declare (fixnum i)
-	     (float s))
+             (float s))
     (setq s (+ s (binomial-density i n p)))
     ))
 
@@ -82,15 +82,15 @@
 ;;;
 (defun binomial-cumulative (k n p)
   (let ((a (- n k)))
-     (betai a (- n a -1) (- 1 p))))
+    (betai a (- n a -1) (- 1 p))))
 
 ;;; k or more occurances in n trials of probability p
 ;;;
 (defun binomial-tail (k n p)
   (let ((a k))
     (if (= k 0)
-	1.0
-	(betai a (- n a -1) p))))
+        1.0
+        (betai a (- n a -1) p))))
 
 #|
 
@@ -99,10 +99,10 @@
 (binomial-tail 2 9 0.00000000)
 
 (let ((a 3)
-      (n 9)
-      (p 1.0e-8))
-  (list (binomial-cumulative-naive a n p)
-	(binomial-cumulative       a n p)))
+(n 9)
+(p 1.0e-8))
+(list (binomial-cumulative-naive a n p)
+(binomial-cumulative       a n p)))
 
 |#
 
@@ -117,20 +117,20 @@
        (c 0.0)
        (i 0 (1+ i)))
       ((progn (setq c (+ c (binomial-density i n p)))
-	      (< u c))
+              (< u c))
        i)
     (declare (float c u)
-	     (fixnum i))
+             (fixnum i))
     ))
 
 #|
 
 (defun bi-test (n p m)
-  (do ((i 0 (1+ i))
-       (s 0))
-      ((>= i m)
-       (/ (float s) (float m)))
-    (declare (fixnum i s))
-    (setq s (+ s (binomial-random-number n p)))))
+(do ((i 0 (1+ i))
+(s 0))
+((>= i m)
+(/ (float s) (float m)))
+(declare (fixnum i s))
+(setq s (+ s (binomial-random-number n p)))))
 
 |#

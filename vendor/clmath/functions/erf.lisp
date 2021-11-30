@@ -19,7 +19,7 @@
 ;;;  that this notice is not removed.
 
 ;;; Bugs and fixes
-;;;   
+;;;
 
 (in-package "CLMATH")
 
@@ -45,16 +45,16 @@
 
 #|
 (defun erfc (X)					; 0 <= X
-  (if (< x 0.0)
-      (error "erfc:  Negative Argument ~f" x)
-      (let ((z (/ 1.0 (1+ (* 0.47047 X)))))
-	(declare (float z))
-	(- 1.0 (* (EXP (- (* X X)))
-		  (POLY Z 
-			0.0			; eps < 2.5e-5
-			0.3480242
-			-.0958798
-			0.7478556))))))
+(if (< x 0.0)
+(error "erfc:  Negative Argument ~f" x)
+(let ((z (/ 1.0 (1+ (* 0.47047 X)))))
+(declare (float z))
+(- 1.0 (* (EXP (- (* X X)))
+(POLY Z
+0.0			; eps < 2.5e-5
+0.3480242
+-.0958798
+0.7478556))))))
 |#
 
 ;;; derived from NBS 7.1.26
@@ -65,22 +65,22 @@
   (if (< x 0.0)
       (error "erfc:  Negative Argument ~f" x)
       (let ((z (/ 1.0 (1+ (* 0.3275911e0 x)))))
-	(declare (float z))
-	(* (exp (- (* x x)))
-	   (poly z 
-		 +0.000000000e0
-		 +0.254829592e0
-		 -0.284496736e0
-		 +1.421413741e0
-		 -1.453152027e0
-		 +1.061405429e0)))))
+        (declare (float z))
+        (* (exp (- (* x x)))
+           (poly z
+                 +0.000000000e0
+                 +0.254829592e0
+                 -0.284496736e0
+                 +1.421413741e0
+                 -1.453152027e0
+                 +1.061405429e0)))))
 
 (defun erf (x)
   (declare (float x))
   (cond ((<  x 0.0) (- (erf (- x))))
-	((>= x 5.0) 1.0)
-	(t
-	 (- 1.0 (erfc x)))))
+        ((>= x 5.0) 1.0)
+        (t
+         (- 1.0 (erfc x)))))
 
 ;;; NBS 7.1.26
 ;;;

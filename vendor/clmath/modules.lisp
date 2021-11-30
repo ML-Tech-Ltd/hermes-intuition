@@ -30,7 +30,7 @@
 (defun module-pathname-get (name)
   (let ((pathnames (gethash name module-database)))
     (if (null pathnames)
-	(warn "Module ~A has no pathname translations" name))
+        (warn "Module ~A has no pathname translations" name))
     pathnames))
 
 (defun module-pathname-put (name pathname)

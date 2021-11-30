@@ -44,24 +44,24 @@
       filename
       (let ((j (position #\: filename)))
 
-	(if (null j)
-	    (error "IMPORT-FILENAME:  no explicit host in ~s" filename))
+        (if (null j)
+            (error "IMPORT-FILENAME:  no explicit host in ~s" filename))
 
-	(let ((host (subseq filename 0 j)))
-	  (cond ((string-equal host "OZ")	; convert it
-		 (warn "converting OZ pathname to TX")
-		 (let* ((fn   (copy-seq filename))
-			(dir0 (position #\< fn))	; position of <
-			(dir1 (position #\> fn)))	; position of >
-		   (nstring-downcase fn)
-		   (nsubstitute #\/ #\. fn :start dir0 :end dir1)
-		   (setf (aref fn dir0) #\/)
-		   (setf (aref fn dir1) #\/)
-		   (parse-namestring (concatenate 'string "/homes" (subseq fn dir0))
-				     "TRIX")))
-		(t
-		 (parse-namestring (subseq filename (1+ j)) host)))
-	  ))))
+        (let ((host (subseq filename 0 j)))
+          (cond ((string-equal host "OZ")	; convert it
+                 (warn "converting OZ pathname to TX")
+                 (let* ((fn   (copy-seq filename))
+                        (dir0 (position #\< fn))	; position of <
+                        (dir1 (position #\> fn)))	; position of >
+                   (nstring-downcase fn)
+                   (nsubstitute #\/ #\. fn :start dir0 :end dir1)
+                   (setf (aref fn dir0) #\/)
+                   (setf (aref fn dir1) #\/)
+                   (parse-namestring (concatenate 'string "/homes" (subseq fn dir0))
+                                     "TRIX")))
+                (t
+                 (parse-namestring (subseq filename (1+ j)) host)))
+          ))))
 
 
 ;;;; Package Hack
@@ -74,75 +74,75 @@
 
 (defun import-package (filename)
   (let* ((attr-plist   (fs:pathname-attribute-list filename))
-	 (package-spec (getf attr-plist :package)))
+         (package-spec (getf attr-plist :package)))
 
     (cond ((null package-spec) *package*)	; no package? use the current one
 
-	  ((listp package-spec)			; create form...
-	   (let ((pack (find-package (car package-spec))))
-	     (if (null pack)			; time to make the package
-		 (apply #'make-package package-spec)
-		 pack)))
+          ((listp package-spec)			; create form...
+           (let ((pack (find-package (car package-spec))))
+             (if (null pack)			; time to make the package
+                 (apply #'make-package package-spec)
+                 pack)))
 
-	  (t
-	   (let ((pack (find-package package-spec)))
-	     (if (null pack)
-		 (progn (cerror "Make the package"
-				"Package ~a does not exist."
-				package-spec)
-			(make-package package-spec))
-		 pack))))))
+          (t
+           (let ((pack (find-package package-spec)))
+             (if (null pack)
+                 (progn (cerror "Make the package"
+                                "Package ~a does not exist."
+                                package-spec)
+                        (make-package package-spec))
+                 pack))))))
 
 
 ;;;; Import Load
 
 (defmacro import-load (fxname)
   (let* ((lsp   fxname)				; get the effective pathname
-	 (ext   (progn
-		  #+(and LUCID (not HP)) "lbin"	; normal lucid
-		  #+(and LUCID      HP ) "b"	; hp version of lucid
-		  #+COMMON               "LAP"
-		  #+3600                 "BIN"))
-	 (bin   (make-pathname :type ext :defaults lsp)))
+         (ext   (progn
+                  #+(and LUCID (not HP)) "lbin"	; normal lucid
+                  #+(and LUCID      HP ) "b"	; hp version of lucid
+                  #+COMMON               "LAP"
+                  #+3600                 "BIN"))
+         (bin   (make-pathname :type ext :defaults lsp)))
 
     `(let ((tag (probe-file ',lsp)))
        (declare (special imported-file-list))
        (or (boundp 'imported-file-list)
-	   (setq    imported-file-list nil))
+           (setq    imported-file-list nil))
        (cond ((member tag imported-file-list :test #'equal))
-	     (tag
-	      (load (or (probe-file ',bin) tag))
-	      (push tag imported-file-list)
-	      nil)
-	     (t
-	      (error "IMPORT-LOAD:  File Not Found ~S" ',lsp))))))
+             (tag
+              (load (or (probe-file ',bin) tag))
+              (push tag imported-file-list)
+              nil)
+             (t
+              (error "IMPORT-LOAD:  File Not Found ~S" ',lsp))))))
 
 
 ;;;; Import File
 
 (defmacro import-file (fn)
-  
+
   (let* ((filename  (import-filename fn))	; get the effective pathname
-	 (*package* (import-package filename))	; find what package it wants
-	 (form      nil))
+         (*package* (import-package filename))	; find what package it wants
+         (form      nil))
 
     (with-open-file (filei filename)
-      
+
       ;; find a sensible form to import
       (dotimes (i 3)				; look at the first 3 forms
-	(setq form (read filei nil :EOF))
-	(cond ((eq form :EOF)
-	       (error "IMPORT-FILE:  EOF in ~s" filename))
-	      ((or (atom form)
-		   (not (atom (car form))))
-	       (error "IMPORT-FILE:  bad format in ~s" filename))
-	      ((eq (car form) 'in-package))	; go around again
-	      ((eq (car form) 'eval-when)
-	       (return nil))
-	      )
-	))
+        (setq form (read filei nil :EOF))
+        (cond ((eq form :EOF)
+               (error "IMPORT-FILE:  EOF in ~s" filename))
+              ((or (atom form)
+                   (not (atom (car form))))
+               (error "IMPORT-FILE:  bad format in ~s" filename))
+              ((eq (car form) 'in-package))	; go around again
+              ((eq (car form) 'eval-when)
+               (return nil))
+              )
+        ))
 
     `(progn 'compile
-	    (IMPORT-LOAD ,filename)
-	    ,form)
+            (IMPORT-LOAD ,filename)
+            ,form)
     ))

@@ -26,9 +26,9 @@
 (DEFUN FLOATING-EXPONENT (X)
   #+MACLISP (- (*LDB   #o3310_24. (ABS X)) #o0200)	; extract exp (PDP-10)
   #+lispm (multiple-value-bind (signif expon sign)	; god damn 3600
-	      (si:decode-float x)
-	    (declare (ignore signif sign))
-	    expon)
+              (si:decode-float x)
+            (declare (ignore signif sign))
+            expon)
   )
 
 #+MACLISP
@@ -39,7 +39,7 @@
   #+LISPM (ASH X E))
 #|
 (DEFUN FLOATING-MANTISSA (X)
-  (FLOATING-SCALE X (- (FLOATING-EXPONENT X))))
+(FLOATING-SCALE X (- (FLOATING-EXPONENT X))))
 |#
 
 ;;;; Square Root
@@ -56,19 +56,19 @@
 ;;; two Heron iterations --> 32 bit accuracy
 #|
 (DEFUN SQUARE-ROOT (X)
-  (LET* ((EXP (FLOATING-EXPONENT X))		; extract exponent
-	 (MAN (FLOATING-SCALE    X (- EXP)))	; extract mantissa
-	 (YI  (+ 0.41730760			; initial mantissa
-		  (* 0.59016207 MAN))))
-    (DECLARE (FIXNUM EXP)
-	     (FLOAT MAN YI))
-    
-    (SETQ YI (IF (ODDP EXP)
-		 (* 1.4142135623730950488	; sqrt(2)
-		     (FLOATING-SCALE YI (ASH (- EXP 1) -1)))
-		 (FLOATING-SCALE YI (ASH EXP -1))))
+(LET* ((EXP (FLOATING-EXPONENT X))		; extract exponent
+(MAN (FLOATING-SCALE    X (- EXP)))	; extract mantissa
+(YI  (+ 0.41730760			; initial mantissa
+(* 0.59016207 MAN))))
+(DECLARE (FIXNUM EXP)
+(FLOAT MAN YI))
 
-    (SETQ YI (* 0.5 (+ YI (/ X YI))))	; iteration 1
-    (SETQ YI (* 0.5 (+ YI (/ X YI))))	; iteration 2
-    ))
+(SETQ YI (IF (ODDP EXP)
+(* 1.4142135623730950488	; sqrt(2)
+(FLOATING-SCALE YI (ASH (- EXP 1) -1)))
+(FLOATING-SCALE YI (ASH EXP -1))))
+
+(SETQ YI (* 0.5 (+ YI (/ X YI))))	; iteration 1
+(SETQ YI (* 0.5 (+ YI (/ X YI))))	; iteration 2
+))
 |#

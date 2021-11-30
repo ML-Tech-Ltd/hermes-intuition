@@ -69,13 +69,13 @@
 
 (defun uniform-density (x)
   (cond ((< x 0.0) 0.0)
-	((> x 1.0) 0.0)
-	(t         1.0)))
+        ((> x 1.0) 0.0)
+        (t         1.0)))
 
 (defun uniform-cumulative (x)
   (cond ((< x 0.0) 0.0)
-	((> x 1.0) 1.0)
-	(t           x)))
+        ((> x 1.0) 1.0)
+        (t           x)))
 
 ;;; note -- x is never 0.0 or 1.0
 ;;;
@@ -124,9 +124,9 @@
   (do ((u 0.0)
        (v 0.0))
       ((progn
-	 (setq u (uniform-random-number)
-	       v (* 2.0 (exp -1.0) (uniform-random-number)))
-	 (<= v (* -2.0 u (log u))))
+         (setq u (uniform-random-number)
+               v (* 2.0 (exp -1.0) (uniform-random-number)))
+         (<= v (* -2.0 u (log u))))
        (/ v u lmbd))
     (declare (float u v))))
 
@@ -153,9 +153,9 @@
   (do ((u 0.0)
        (v 0.0))
       ((progn
-	 (setq u (uniform-random-number)
-	       v (* 2.0 (- (uniform-random-number) 0.5)))
-	 (< (+ (* v v) (* u u)) 1.0))
+         (setq u (uniform-random-number)
+               v (* 2.0 (- (uniform-random-number) 0.5)))
+         (< (+ (* v v) (* u u)) 1.0))
        (/ v u))
     (declare (float u v))))
 
@@ -169,51 +169,51 @@
 ;;; NBS 26.2.16
 ;;;
 (defun NORMAL-CUMULATIVE (x)
-  (if (< x 0.0)
-      (- 1.0 (normal-cumulative (- x)))
-      (let ((z (/ 1.0 (1+ (* 0.33267 x)))))
-	(declare (float z))
-	(-  1.0 (* (NORMAL-DENSITY x)		; eps < 1.0e-5
-		   (horner-polynomial z
-				      0.0
-				      0.4361836
-				      -.1201676
-				      0.9372980))))))
+(if (< x 0.0)
+(- 1.0 (normal-cumulative (- x)))
+(let ((z (/ 1.0 (1+ (* 0.33267 x)))))
+(declare (float z))
+(-  1.0 (* (NORMAL-DENSITY x)		; eps < 1.0e-5
+(horner-polynomial z
+0.0
+0.4361836
+-.1201676
+0.9372980))))))
 |#
 
 ;;; NBS 26.2.17
 ;;;
 (defun NORMAL-CUMULATIVE (x)
   (flet ((nctail (x)				; eps < 7.5e-8
-	   (declare (ftype (function (float) float) nctail))
-	   (let ((z (/ 1.0 (1+ (* 0.2316419 x)))))
-	     (declare (float z))
-	     (* (NORMAL-DENSITY x)
-		(horner-polynomial z
-				   0.0
-				   0.319381530
-				   -.356563782
-				   1.781477937
-				   -1.821255978
-				   1.330274429)))))
+           (declare (ftype (function (float) float) nctail))
+           (let ((z (/ 1.0 (1+ (* 0.2316419 x)))))
+             (declare (float z))
+             (* (NORMAL-DENSITY x)
+                (horner-polynomial z
+                                   0.0
+                                   0.319381530
+                                   -.356563782
+                                   1.781477937
+                                   -1.821255978
+                                   1.330274429)))))
     (if (< x 0.0)
-	(nctail (- x))
-	(- 1.0 (nctail x)))))
+        (nctail (- x))
+        (- 1.0 (nctail x)))))
 
 ;;; NBS 26.2.22
 ;;; NORMAL-TAIL finds x such that
 ;;;     p = 1.0 - NORMAL-CUMULATIVE(x) = NORMAL-CUMULATIVE(-x)
 ;;;
 (defun NORMAL-TAIL (p)				;0 < p <= .5
-						;eps < 4.5e-4
+  ;eps < 4.5e-4
   (cond ((or (< p 0.0) (> p 1.0))
-	 (error "Bad Probability"))
-	((> p 0.5) (- (normal-tail (- 1.0 p))))
-	(t
-	 (let ((s (sqrt (* -2.0 (log p)))))
-	   (declare (float s))
-	   (- s (/ (horner-polynomial s 2.515517 0.802853 0.010328)
-		   (horner-polynomial s 1.000000 1.432788 0.189269 0.001308)))))))
+         (error "Bad Probability"))
+        ((> p 0.5) (- (normal-tail (- 1.0 p))))
+        (t
+         (let ((s (sqrt (* -2.0 (log p)))))
+           (declare (float s))
+           (- s (/ (horner-polynomial s 2.515517 0.802853 0.010328)
+                   (horner-polynomial s 1.000000 1.432788 0.189269 0.001308)))))))
 
 
 ;;;; Normal Random Number
@@ -245,10 +245,10 @@
   (do ((u 0.0)
        (v 0.0))
       ((progn
-	 (setq u (uniform-random-number)	; U is bounded (0 1)
-	       v (* 2.0 (sqrt 2.0) (exp -0.5)	; V is bounded (-MAX MAX)
-		    (- (uniform-random-number) 0.5)))
-	 (<= (* v v) (* -4.0 u u (log u))))	; < should be <=
+         (setq u (uniform-random-number)	; U is bounded (0 1)
+               v (* 2.0 (sqrt 2.0) (exp -0.5)	; V is bounded (-MAX MAX)
+                    (- (uniform-random-number) 0.5)))
+         (<= (* v v) (* -4.0 u u (log u))))	; < should be <=
        (/ v u))
     (declare (float u v))))
 
@@ -259,13 +259,13 @@
   (if (<= x 0.0)
       0.0
       (/ (* (expt x (1- a)) (exp (- x)))
-	 (gamma-function a))))
+         (gamma-function a))))
 
 (defun gamma-cumulative (x a)
   (if (<= x 0.0)
       0.0
       (/ (gamma-function-incomplete a x)
-	 (gamma-function a))))
+         (gamma-function a))))
 
 
 ;;;; Gamma Random Number
@@ -293,23 +293,23 @@
   (if (or (< a 0.0) (>= a 1.0))
       (error "GAMMA-RANDOM-NUMBER-SUB01"))
   (let* ((e (exp 1.0))
-	 (p (/ e (+ a e))))			; probability G1 should be used
+         (p (/ e (+ a e))))			; probability G1 should be used
     (declare (float e p))
     (do ()					; < 1.4 iterations
-	(NIL)
+        (NIL)
       (let ((U (uniform-random-number))
-	    (V (uniform-random-number))
-	    (X 0.0)
-	    (q 0.0))
-	(declare (float U V X q))
-	(if (< U p)
-	    (setq X (expt V (/ a))
-		  q (exp (- X)))
-	    (setq X (- 1.0 (log V))
-		  q (expt X (- a 1.0))))
-	;; now X has density g and q = f(X) / c g(X)
-	(if (< (uniform-random-number) q)
-	    (return X))))))
+            (V (uniform-random-number))
+            (X 0.0)
+            (q 0.0))
+        (declare (float U V X q))
+        (if (< U p)
+            (setq X (expt V (/ a))
+                  q (exp (- X)))
+            (setq X (- 1.0 (log V))
+                  q (expt X (- a 1.0))))
+        ;; now X has density g and q = f(X) / c g(X)
+        (if (< (uniform-random-number) q)
+            (return X))))))
 
 ;;; Knuth Algorithm A, page 129
 
@@ -320,32 +320,32 @@
   (if (<= a 1.0)
       (error "GAMMA-RANDOM-NUMBER-SUB:  bad argument")
       (do ((a-1      (- a 1.0))
-	   (sqrt2a-1 (sqrt (- (* 2.0 a) 1.0))))
-	  (NIL)
-	(declare (float a-1 sqrt2a-1))
-	(let* ((U (uniform-random-number))	; executed < 1.902 if a >= 3
-	       (Y (tan (* (float pi 1.0) U)))
-	       (X (+ (* sqrt2a-1 Y) a-1)))
-	  (declare (float U Y X))
-	  (if (> X 0.0)
-	      (if (<= (log (/ (uniform-random-number) (+ 1.0 (expt Y 2))))
-		      (- (* a-1 (log (/ X a-1))) (* sqrt2a-1 Y)))
-		  (return X)))))))
+           (sqrt2a-1 (sqrt (- (* 2.0 a) 1.0))))
+          (NIL)
+        (declare (float a-1 sqrt2a-1))
+        (let* ((U (uniform-random-number))	; executed < 1.902 if a >= 3
+               (Y (tan (* (float pi 1.0) U)))
+               (X (+ (* sqrt2a-1 Y) a-1)))
+          (declare (float U Y X))
+          (if (> X 0.0)
+              (if (<= (log (/ (uniform-random-number) (+ 1.0 (expt Y 2))))
+                      (- (* a-1 (log (/ X a-1))) (* sqrt2a-1 Y)))
+                  (return X)))))))
 
 (defun gamma-random-number-subi (a)
   (do ((x a   (- x 1.0))
        (u 1.0 (* u (uniform-random-number))))
       ((< x 1.0)
        (- (if (<= x 0.0) 0.0 (gamma-random-number-sub01 x))
-	  (log u)))
+          (log u)))
     (declare (float x u))
     ))
 
 (defun gamma-random-number (a)
   (cond ((<= a 0.0) (error "GRX:  bad arg"))
-	((>= a 3.0) (gamma-random-number-sub   a))
-	((<  a 1.0) (gamma-random-number-sub01 a))
-	(t          (gamma-random-number-subi  a))))
+        ((>= a 3.0) (gamma-random-number-sub   a))
+        ((<  a 1.0) (gamma-random-number-sub01 a))
+        (t          (gamma-random-number-subi  a))))
 
 
 ;;;; Gamma Random Number
@@ -360,25 +360,25 @@
 #|
 
 (defun gamma-0-random-number (a x)
-  (* (expt x (- a 1.0)) (exp (- x))))
+(* (expt x (- a 1.0)) (exp (- x))))
 
 (defun gamma-random-number (fa)
-  (let ((a (float fa)))
-    (declare (float a))
-    (if (<= a 1.0)
-	(error "gamma-random-number -- arg < 1.0")
-	(do ((ul (sqrt (gamma-0-random-number a (- a 1.0))))
-	     (vl (gamma-0-random-number (+ a 2.0) (+ a 1.0)))
-	     (u  0.0)
-	     (v  0.0)
-	     (x  0.0))
-	    ((progn (setq u (* ul (uniform-random-number)))
-		    (setq v (* vl (uniform-random-number)))
-		    (setq x (/ v u))
-		    (<= (* 2.0 (log u))
-			(+ (* (- a 1.0) (log x)) (- x))))
-	     x)
-	  (declare (float ul vl u v x))))))
+(let ((a (float fa)))
+(declare (float a))
+(if (<= a 1.0)
+(error "gamma-random-number -- arg < 1.0")
+(do ((ul (sqrt (gamma-0-random-number a (- a 1.0))))
+(vl (gamma-0-random-number (+ a 2.0) (+ a 1.0)))
+(u  0.0)
+(v  0.0)
+(x  0.0))
+((progn (setq u (* ul (uniform-random-number)))
+(setq v (* vl (uniform-random-number)))
+(setq x (/ v u))
+(<= (* 2.0 (log u))
+(+ (* (- a 1.0) (log x)) (- x))))
+x)
+(declare (float ul vl u v x))))))
 
 |#
 
@@ -387,18 +387,18 @@
 
 (defun beta-density (x m n)
   (cond ((< x 0.0) 0.0)
-	((> x 1.0) 0.0)
-	(t
-	 (/ (* (expt x          (1- m))
-	       (expt (- 1.0 x) (1- n)))
-	    (beta-function m n)))))
+        ((> x 1.0) 0.0)
+        (t
+         (/ (* (expt x          (1- m))
+               (expt (- 1.0 x) (1- n)))
+            (beta-function m n)))))
 
 (defun beta-cumulative (x m n)
   (cond ((<= x 0.0) 0.0)
-	((>= x 1.0) 1.0)
-	(t
-	 (/ (beta-function-incomplete m n x)
-	    (beta-function m n)))))
+        ((>= x 1.0) 1.0)
+        (t
+         (/ (beta-function-incomplete m n x)
+            (beta-function m n)))))
 
 
 ;;;; Beta Random Number
@@ -410,7 +410,7 @@
 ;;;
 (defun beta-random-number (m n)
   (let ((x1 (gamma-random-number (float m)))
-	(x2 (gamma-random-number (float n))))
+        (x2 (gamma-random-number (float n))))
     (declare (float x1 x2))
     (/ x1 (+ x1 x2))))
 
@@ -441,31 +441,31 @@
 
 #|
 (defun beta-0-random-number (m n x)
-  (* (expt        x  (1- m))
-     (expt (- 1.0 x) (1- n))))
+(* (expt        x  (1- m))
+(expt (- 1.0 x) (1- n))))
 
 (defun beta-random-number (m n)
-  (let* ((fm (float m))
-	 (fn (float n))
-	 (ux (/ (1- fm) (+ fm fn -2)))
-	 (u1 (sqrt (beta-0-random-number fm fn ux)))
-	 (vx (/ (1+ fm) (+ fm fn)))
-	 (v1 (* vx (sqrt (beta-0-random-number fm fn vx)))))
-    (declare (float fm fn ux u1 vx v1))
-    ;; (format t "~&Area of (u,v) = ~f" (* u1 v1))
-    ;; (format t "~&   efficiency = ~f" (/ (* u1 v1) (/ (beta-function fm fn) 2.0)))
-    (do ((u  0.0)
-	 (v  0.0))
-	((progn
-	   (setq u (* u1 (uniform-random-number))
-		 v (* v1 (uniform-random-number)))
-	   (and (<= v u)			; v/u is bounded!
-		;; (< (expt u 2) (beta-0-random-number m n (/ v u)))
-		(< (* 2.0 (log u))
-		   (+ (* (1- fm) (log        (/ v u)))
-		      (* (1- fn) (log (- 1.0 (/ v u))))))))
-	 (/ v u))
-      (declare (float u v)))))
+(let* ((fm (float m))
+(fn (float n))
+(ux (/ (1- fm) (+ fm fn -2)))
+(u1 (sqrt (beta-0-random-number fm fn ux)))
+(vx (/ (1+ fm) (+ fm fn)))
+(v1 (* vx (sqrt (beta-0-random-number fm fn vx)))))
+(declare (float fm fn ux u1 vx v1))
+;; (format t "~&Area of (u,v) = ~f" (* u1 v1))
+;; (format t "~&   efficiency = ~f" (/ (* u1 v1) (/ (beta-function fm fn) 2.0)))
+(do ((u  0.0)
+(v  0.0))
+((progn
+(setq u (* u1 (uniform-random-number))
+v (* v1 (uniform-random-number)))
+(and (<= v u)			; v/u is bounded!
+;; (< (expt u 2) (beta-0-random-number m n (/ v u)))
+(< (* 2.0 (log u))
+(+ (* (1- fm) (log        (/ v u)))
+(* (1- fn) (log (- 1.0 (/ v u))))))))
+(/ v u))
+(declare (float u v)))))
 
 (time (beta-random-number 50 20))
 (time (beta-random-number 10 20))
@@ -485,12 +485,12 @@
 #|
 
 (defun CHI-SQUARE-DENSITY (chi-sq n)
-  (if (< chi-sq 0.0)
-      0.0
-      (let ((a (* 0.5 (float n))))
-	(declare (float a))
-	(/ (* (expt chi-sq (1- a)) (exp (* -0.5 chi-sq)))
-	   (* (expt 2.0 a)         (gamma-function a))))))
+(if (< chi-sq 0.0)
+0.0
+(let ((a (* 0.5 (float n))))
+(declare (float a))
+(/ (* (expt chi-sq (1- a)) (exp (* -0.5 chi-sq)))
+(* (expt 2.0 a)         (gamma-function a))))))
 
 |#
 
@@ -512,11 +512,11 @@
 #|
 
 (defun chi-square-random-number (M)
-  (do ((sum 0.0)
-       (cnt 1 (1+ cnt)))
-      ((> cnt m) sum)
-    (declare (float sum) (fixnum cnt))
-    (setq sum (+ sum (expt (normal-random-number) 2)))))
+(do ((sum 0.0)
+(cnt 1 (1+ cnt)))
+((> cnt m) sum)
+(declare (float sum) (fixnum cnt))
+(setq sum (+ sum (expt (normal-random-number) 2)))))
 
 |#
 
@@ -539,22 +539,22 @@
 ;;;        0 = (+ (* (+ n/2 1) (/ x))  -1/2)
 ;;;        x = (+ n 2)
 
-#| diked out --- 
+#| diked out ---
 
 (defun chi-square-0-random-number (n x)
-  (* (expt x (1- (/ (float n) 2.0)))
-     (exp  (* -0.5 x))))
+(* (expt x (1- (/ (float n) 2.0)))
+(exp  (* -0.5 x))))
 
 (defun chi-square-random-number (n)
-  (declare (float u v vl xmax))
-  (do ((vl (let ((xmax (+ 2.0 (float n))))
-	     (* xmax (sqrt (chi-square-0-random-number n xmax)))))
-       (U 0.0) (v 0.0))
-      ((progn
-	 (setq u (uniform-random-number)
-	       V (* vl (uniform-random-number)))
-	 (< (expt u 2) (chi-square-0-random-number n (/ v u))))
-       (/ v u))))
+(declare (float u v vl xmax))
+(do ((vl (let ((xmax (+ 2.0 (float n))))
+(* xmax (sqrt (chi-square-0-random-number n xmax)))))
+(U 0.0) (v 0.0))
+((progn
+(setq u (uniform-random-number)
+V (* vl (uniform-random-number)))
+(< (expt u 2) (chi-square-0-random-number n (/ v u))))
+(/ v u))))
 
 |#
 
@@ -574,9 +574,9 @@
     (declare (float nf))
     (/ (gamma-function (/ (1+ nf) 2.0))
        (* (float (sqrt (* nf pi)) 1.0)
-	  (gamma-function (/ nf 2.0))
-	  (expt (1+ (/ (expt tt 2) nf))
-		(* 0.5 (1+ nf)))))))
+          (gamma-function (/ nf 2.0))
+          (expt (1+ (/ (expt tt 2) nf))
+                (* 0.5 (1+ nf)))))))
 
 ;;; TWO-SIDED (integral from -t to t)
 ;;; NBS 27.6.1
@@ -588,12 +588,12 @@
 ;;;   so
 ;;;    I[1-x](b,a) = 1 - I[x](a,b)
 ;;;
-;;; therefore 
+;;; therefore
 ;;;   A(t, v) = I[1-x](1/2, v/2)
 ;;;
 (defun t-two-sided (tt n)
   (let* ((v (float n))
-	 (x (/ v (+ v (expt tt 2)))))
+         (x (/ v (+ v (expt tt 2)))))
     (declare (float v x))
     (/ (beta-function-incomplete 0.5 (/ v 2.0) (- 1.0 x))
        (beta-function 0.5 (/ v 2.0)))))
@@ -601,8 +601,8 @@
 (defun t-cumulative (tt n)
   (let ((p (t-two-sided tt n)))
     (if (< tt 0.0)
-	(- 0.5 (* 0.5 p))
-	(+ 0.5 (* 0.5 p)))))
+        (- 0.5 (* 0.5 p))
+        (+ 0.5 (* 0.5 p)))))
 
 
 ;;;; Student's t Random Number
@@ -622,7 +622,7 @@
 
 ;;; LET g(x) = (expt (+ (/ (^ X 2) n) 1) (* -0.5 (+ n 1)))
 ;;; max x x g(x) = (* x x (expt (+ (/ (^ X 2) n) 1) (* -0.5 (+ n 1))))
-;;; or max log = 
+;;; or max log =
 ;;;   (+ (* 2 (log x)) (* -0.5 (+ n 1) (log (+ (/ (^ X 2) n) 1))))
 ;;; derivative = 0
 ;;; (+ (* 2 (/ x)) (* -0.5 (+ n 1) (/ (+ (/ (^ X 2) n) 1)) (/ (* 2 X) n)))
@@ -641,21 +641,21 @@
 
 #|
 (defun T-0-RANDOM-NUMBER (n x)
-  (expt (1+ (/ (expt x 2) (float n)))
-	(* -0.5 (1+ (float n)))))
+(expt (1+ (/ (expt x 2) (float n)))
+(* -0.5 (1+ (float n)))))
 
 (defun T-RANDOM-NUMBER (n)
-  (let ((xmax (sqrt (/ (* 2.0 (float n)) (1- (float n))))))
-    (declare (float xmax))
-    (do ((vl (* xmax (sqrt (t-0-random-number n xmax))))
-	 (u 0.0)
-	 (v 0.0))
-	((progn
-	   (setq u (uniform-random-number)
-		 v (* vl 2.0 (- (uniform-random-number) 0.5)))	; two-sided
-	   (< (expt u 2) (t-0-random-number n (/ v u))))
-	 (/ v u))
-      (declare (float u v vl)))))
+(let ((xmax (sqrt (/ (* 2.0 (float n)) (1- (float n))))))
+(declare (float xmax))
+(do ((vl (* xmax (sqrt (t-0-random-number n xmax))))
+(u 0.0)
+(v 0.0))
+((progn
+(setq u (uniform-random-number)
+v (* vl 2.0 (- (uniform-random-number) 0.5)))	; two-sided
+(< (expt u 2) (t-0-random-number n (/ v u))))
+(/ v u))
+(declare (float u v vl)))))
 |#
 
 
@@ -675,22 +675,22 @@
 
 (defun F-density (F m n)				;0<F<+inf
   (let ((m2 (/ (float m) 2.0))
-	(n2 (/ (float n) 2.0)))
+        (n2 (/ (float n) 2.0)))
     (declare (float m2 n2))
     (/ (* (gamma-function (+ m2 n2))
-	  (expt (/ m2 n2) m2)
-	  (expt F (1- m2)))
+          (expt (/ m2 n2) m2)
+          (expt F (1- m2)))
        (* (gamma-function m2)
-	  (gamma-function n2)
-	  (expt (1+ (/ (* m2 F) n2))
-		(+ m2 n2))))))
+          (gamma-function n2)
+          (expt (1+ (/ (* m2 F) n2))
+                (+ m2 n2))))))
 
 (defun F-cumulative (F m n)
   (let ((m2 (/ (float m) 2.0))
-	(n2 (/ (float n) 2.0)))
+        (n2 (/ (float n) 2.0)))
     (declare (float m2 n2))
     (/ (beta-function-incomplete m2 n2 (/ (* m2 F)
-					  (+ n2 (* m2 F))))
+                                          (+ n2 (* m2 F))))
        (beta-function m2 n2))))
 
 ;;;  F(F 2 4) =  y
@@ -713,7 +713,7 @@
 
 ;;; -- Ratio of Uniform Deviates Method
 
-;;; LET g(x) = 
+;;; LET g(x) =
 ;;;   (* (expt x (- v1/2 1)) (expt (+ v2 (* v1 x)) (* -0.5 (+ v1 v2))))
 ;;; max x x g(x) =
 ;;;   (* (expt x (+ v1/2 1)) (expt (+ v2 (* v1 x)) (* -0.5 (+ v1 v2))))
@@ -737,22 +737,22 @@
 
 ;;; ugly !! v2 > 2 -- why ???
 
-#| diked out --- 
+#| diked out ---
 
 (defun f-0-random-number (v1 v2 x)
-  (* (expt x (- (/ (float v1) 2.0) 1.0))
-     (expt (+ (float v2) (* (float v1) x))
-	   (* -0.5 (+ (float v1) (float v2))))))
+(* (expt x (- (/ (float v1) 2.0) 1.0))
+(expt (+ (float v2) (* (float v1) x))
+(* -0.5 (+ (float v1) (float v2))))))
 
 (defun f-random-number (v1 v2)
-  (declare (float u v vl xmax))
-  (do ((vl (let ((xmax (/ (* (+ (float v1) 2.0) (float v2))
-			  (* (float v1) (- (float v2) 2.0)))))
-	     (* xmax (sqrt (f-0-random-number v1 v2 xmax)))))
-       (u 0.0) (v 0.0))
-      ((progn
-	 (setq u (uniform-random-number)
-	       v (* vl (uniform-random-number)))
-	 (< (expt u 2) (f-0-random-number v1 v2 (/ v u))))
-       (/ v u))))
+(declare (float u v vl xmax))
+(do ((vl (let ((xmax (/ (* (+ (float v1) 2.0) (float v2))
+(* (float v1) (- (float v2) 2.0)))))
+(* xmax (sqrt (f-0-random-number v1 v2 xmax)))))
+(u 0.0) (v 0.0))
+((progn
+(setq u (uniform-random-number)
+v (* vl (uniform-random-number)))
+(< (expt u 2) (f-0-random-number v1 v2 (/ v u))))
+(/ v u))))
 |#

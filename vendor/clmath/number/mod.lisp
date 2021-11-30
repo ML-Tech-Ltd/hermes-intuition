@@ -26,9 +26,9 @@
 
 #|
 (defun gcd (a b)
-  (if (zerop b)
-      a
-      (gcd b (mod a b))))
+(if (zerop b)
+a
+(gcd b (mod a b))))
 |#
 
 ;;; find A and B such that
@@ -55,8 +55,8 @@
 (defun modinv (a modulus)
   (let ((gcde (gcd-extended a modulus)))
     (if (not (equal (nth 4 gcde) 1))
-	(error "MODINV:  no inverse because gcd not equal to 1" (nth 4 gcde))
-	(car gcde))))
+        (error "MODINV:  no inverse because gcd not equal to 1" (nth 4 gcde))
+        (car gcde))))
 
 
 ;;;; Chinese Remainder Theorem
@@ -73,18 +73,18 @@
 (defun chinese (num)					;(PRIME RES ...)
   (declare (fixnum num))
   (do ((P  (do ((i    1 (+ i 2))
-		(prod 1))
-	       ((> i num) prod)
-	     (declare (fixnum i))
-	     (setq prod (* prod (arg i)))))
+                (prod 1))
+               ((> i num) prod)
+             (declare (fixnum i))
+             (setq prod (* prod (arg i)))))
        (i  1 (+ i 2))
        (ch 0))
       ((> i num) (mod ch p))
     (declare (fixnum i))
     (let* ((pr (arg i))
-	   (ui (arg (1+ i)))
-	   (ci (floor p pr))
-	   (di (modinv ci pr)))
+           (ui (arg (1+ i)))
+           (ci (floor p pr))
+           (di (modinv ci pr)))
       (setq ch (+ ch (* ci di ui))))
     ))
 
@@ -93,12 +93,12 @@
 
 (defun modpower (number expon modulus)
   (do ((exp  expon  (floor exp 2))		; speedier to break into
-						;  2**24 bit chunks?
+       ;  2**24 bit chunks?
        (sqr  number (mod (* sqr sqr) modulus))
        (ans  1))
       ((zerop exp) ans)
     (if (oddp exp)
-	(setq ans (mod (* ans sqr) modulus)))))
+        (setq ans (mod (* ans sqr) modulus)))))
 
 
 ;;;; Random Number Generator for BIGNUM Arguments
@@ -117,7 +117,7 @@
     (declare (fixnum l k))
     (setq k (min l 20.))
     (setq bits (+ (* bits (lsh 1 k))		; shift left k bits
-		  (random (lsh 1 k))))		; add in k bits
+                  (random (lsh 1 k))))		; add in k bits
     ))
 
 ;;; Common Lisp has this function internally
@@ -127,14 +127,14 @@
       (error "bad argument to random-big")
 
       (do ((rn 0)
-	   (l  (integer-length n)))
-	  (NIL)
-	(declare (integer rn)
-		 (fixnum l))
-	(setq rn (random-big-1 l))
-	(if (< rn n)
-	    (return rn))
-	)))
+           (l  (integer-length n)))
+          (NIL)
+        (declare (integer rn)
+                 (fixnum l))
+        (setq rn (random-big-1 l))
+        (if (< rn n)
+            (return rn))
+        )))
 
 
 ;;;; Jacobi-Symbol
@@ -155,17 +155,17 @@
 ;;;
 (defun jacobi-symbol (P Q)
   (let ((PP (mod P 16.))			; only need low order bits for
-	(QQ (mod Q 16.)))			;  sometimes.  Used in place of
+        (QQ (mod Q 16.)))			;  sometimes.  Used in place of
     (declare (fixnum PP QQ))			;  P or Q where it matters
 
     (cond ((equal P 0) 0)			; not in GJS notes
-	  ((equal P 1) 1)
-	  ((oddp PP)
-	   (* (jacobi-symbol (mod q p) p)
-	      (jacobi-expt-1 (/ (* (- PP 1) (- QQ 1)) 4))))
-	  (t
-	   (* (jacobi-symbol (floor p 2) Q)
-	      (jacobi-expt-1 (/ (- (* QQ QQ) 1) 8)))))))
+          ((equal P 1) 1)
+          ((oddp PP)
+           (* (jacobi-symbol (mod q p) p)
+              (jacobi-expt-1 (/ (* (- PP 1) (- QQ 1)) 4))))
+          (t
+           (* (jacobi-symbol (floor p 2) Q)
+              (jacobi-expt-1 (/ (- (* QQ QQ) 1) 8)))))))
 
 
 ;;;; Prime Number Test:  Fermat (easily fooled)
@@ -184,14 +184,14 @@
 
 (defun prime-test-fermat (n &optional (trials 50.))
   (cond ((< n 2) NIL)
-	((= n 2) 'PRIME)
-	(t
-	 (do ((i 0 (1+ i)))
-	     ((> i trials) 'Probably-prime)
-	   (declare (fixnum i))
-	   (if (not (prime-test-fermat-1 n))
-	       (return NIL))
-	   ))))
+        ((= n 2) 'PRIME)
+        (t
+         (do ((i 0 (1+ i)))
+             ((> i trials) 'Probably-prime)
+           (declare (fixnum i))
+           (if (not (prime-test-fermat-1 n))
+               (return NIL))
+           ))))
 
 
 ;;;; Prime Number Test:  Solovay-Strassen
@@ -210,23 +210,23 @@
 (defun prime-test (n &optional (trials 50.))
   (setq n (abs n))
   (cond ((< n 2) nil)
-	((= n 2) 'prime)
-	((= n 3) 'prime)
-	((and (> n 100)				; cheap test
-	      (not (= 1 (gcd n
-			     (* 02.  3.  5.  7.	; 28 bit number
-				11. 13. 17. 19.
-				23.)))))
-	 nil)
-	(t
-	 (do ((i 0 (1+ i))
-	      (a (random-big n) (random-big n)))
-	     ((> i trials) 'probably-prime)
-	   (declare (fixnum i))
-	   (cond ((zerop a)			; this test is no good
-		  (setq i (1- i)))
-		 ((not (prime-test-1 a n))
-		  (return nil)))))))
+        ((= n 2) 'prime)
+        ((= n 3) 'prime)
+        ((and (> n 100)				; cheap test
+              (not (= 1 (gcd n
+                             (* 02.  3.  5.  7.	; 28 bit number
+                                11. 13. 17. 19.
+                                23.)))))
+         nil)
+        (t
+         (do ((i 0 (1+ i))
+              (a (random-big n) (random-big n)))
+             ((> i trials) 'probably-prime)
+           (declare (fixnum i))
+           (cond ((zerop a)			; this test is no good
+                  (setq i (1- i)))
+                 ((not (prime-test-1 a n))
+                  (return nil)))))))
 
 
 
@@ -251,7 +251,7 @@
 
     (let ((p (+ 1 (* (random-big-1 (1- l)) 2))))
       (if (prime-test p)
-	  (return p)))
+          (return p)))
     ))
 
 
@@ -261,13 +261,13 @@
 ;;;
 (defun smaller-prime (n)
   (cond ((< n 3)
-	 (error "no smaller prime"))
-	((= n 3)
-	 2)
-	(t
-	 (let ((start (- n (if (oddp n) 2 1))))
-	   (do ((i start (- i 2)))
-	       (nil)
-	     (if (prime-test i)
-		 (return i)))))))
+         (error "no smaller prime"))
+        ((= n 3)
+         2)
+        (t
+         (let ((start (- n (if (oddp n) 2 1))))
+           (do ((i start (- i 2)))
+               (nil)
+             (if (prime-test i)
+                 (return i)))))))
 

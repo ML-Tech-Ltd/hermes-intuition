@@ -20,8 +20,8 @@
 ;;;
 (defun false-position-search (fcn s1 s2 eps)
   (do ((x1 s1)  (y1 (funcall fcn s1))
-       (x2 s2)  (y2 (funcall fcn s2))
-       (xn 0.0) (yn 0.0))
+                (x2 s2)  (y2 (funcall fcn s2))
+                (xn 0.0) (yn 0.0))
       (NIL)
     (declare (float x1 x2 y1 y2 xn yn))
     (if (= y1 y2) (error "FALSE-POSITION-SEARCH Lost"))
@@ -29,9 +29,9 @@
     (setq yn (funcall fcn xn))
     (cond ((< (abs yn) eps) (return xn)))
     (cond ((> (abs y1) (abs y2))
-	   (setq x1 xn) (setq y1 yn))
-	  (t
-	   (setq x2 xn) (setq y2 yn)))))
+           (setq x1 xn) (setq y1 yn))
+          (t
+           (setq x2 xn) (setq y2 yn)))))
 
 
 ;;;; False-position-converge
@@ -40,8 +40,8 @@
 ;;;
 (defun false-position-converge (fcn s1 s2 eps)
   (do ((x1 s1)  (y1 (- (funcall fcn s1) s1))
-       (x2 s2)  (y2 (- (funcall fcn s2) s2))
-       (xn 0.0) (yn 0.0))
+                (x2 s2)  (y2 (- (funcall fcn s2) s2))
+                (xn 0.0) (yn 0.0))
       (NIL)
     (declare (float x1 x2 y1 y2 xn yn))
     (if (= y1 y2) (error "FALSE-POSITION-CONVERGE lost"))
@@ -49,9 +49,9 @@
     (setq yn (- (funcall fcn xn) xn))
     (cond ((< (abs yn) eps) (return xn)))
     (cond ((> (abs y1) (abs y2))
-	   (setq x1 xn) (setq y1 yn))
-	  (t
-	   (setq x2 xn) (setq y2 yn)))))
+           (setq x1 xn) (setq y1 yn))
+          (t
+           (setq x2 xn) (setq y2 yn)))))
 
 
 ;;;; Converge
@@ -60,16 +60,16 @@
 ;;;
 (defun converge (fcn x eps)
   (let* ((x1               x )
-	 (y1 (funcall fcn x1))
-	 (x2              y1 )
-	 (y2 (funcall fcn x2)))
+         (y1 (funcall fcn x1))
+         (x2              y1 )
+         (y2 (funcall fcn x2)))
     (declare (float x x1 x2 y1 y2))
     (do ((xn 0.0)
-	 (yn 0.0))
-	((< (abs (- x2 x1)) eps) x1)
+         (yn 0.0))
+        ((< (abs (- x2 x1)) eps) x1)
       (declare (float xn yn))
       (setq xn (/ (- (* x1 y2) (* x2 y1))
-		  (- (- x1 x2) (- y1 y2))))
+                  (- (- x1 x2) (- y1 y2))))
       (setq yn (funcall fcn xn))
       (setq x1 x2 x2 xn
-	    y1 y2 y2 yn))))
+            y1 y2 y2 yn))))

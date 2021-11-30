@@ -17,7 +17,7 @@
 ;;;  that this notice is not removed.
 
 ;;; Bugs and fixes
-;;;   
+;;;
 
 (in-package "CLMATH")
 
@@ -28,7 +28,7 @@
 
 (defun beta-function-naive (m n)		;m,n>0
   (/ (* (gamma-function m)
-	(gamma-function n))
+        (gamma-function n))
      (gamma-function (+ m n))))
 
 (defun log-beta-function (m n)
@@ -71,21 +71,21 @@
   (setq x (float x 1.0d0))
   (if (not beta-warning)
       (progn (warn "*** BETA-FUNCTION-INCOMPLETE is noisy")
-	     (setq beta-warning t)))
+             (setq beta-warning t)))
   (cond ((= n (float (floor n)))
-	 (do ((i    1.0d0 (1+ i))
-	      (beta 0.0d0)
-	      (Ti   (/ (expt x m) m)))
-	     ((> i n) (float beta 1.0))
-	   (declare (type double-float i beta Ti))
-	   (setq beta (+ beta Ti)
-		 Ti   (- (/ (* (+ m i -1.0d0) (- n i) x Ti)
-			    (* (+ m i) i))))))
-	((= m (float (floor m)))
-	 (- (beta-function m n)
-	    (beta-function-incomplete n m (- 1.0d0 x))))
-	(t
-	 (error "BETA-FUNCTION-INCOMPLETE must have one integer parameter"))))
+         (do ((i    1.0d0 (1+ i))
+              (beta 0.0d0)
+              (Ti   (/ (expt x m) m)))
+             ((> i n) (float beta 1.0))
+           (declare (type double-float i beta Ti))
+           (setq beta (+ beta Ti)
+                 Ti   (- (/ (* (+ m i -1.0d0) (- n i) x Ti)
+                            (* (+ m i) i))))))
+        ((= m (float (floor m)))
+         (- (beta-function m n)
+            (beta-function-incomplete n m (- 1.0d0 x))))
+        (t
+         (error "BETA-FUNCTION-INCOMPLETE must have one integer parameter"))))
 
 #|
 
@@ -94,19 +94,19 @@
 (module-require "PLOT")
 
 (- (beta-function-incomplete 3.0 10.0 .7333333)
-   (beta-function-incomplete 3.0 10.0 .7166667))
+(beta-function-incomplete 3.0 10.0 .7166667))
 
 (defun foo (a b)
-  (plot-fcn  100 #'(lambda (x) (beta-function-incomplete a b x))
-	    0.0 1.0 pstrm))
+(plot-fcn  100 #'(lambda (x) (beta-function-incomplete a b x))
+0.0 1.0 pstrm))
 
 (defun bar (a b)
-  (plot-fcn 1000 #'(lambda (x) (beta-function-incomplete a b x))
-	    0.6 1.0 pstrm))
+(plot-fcn 1000 #'(lambda (x) (beta-function-incomplete a b x))
+0.6 1.0 pstrm))
 
 (defun bard (a b)
-  (plot-fcn 1000 #'(lambda (x) (beta-function-incomplete a b x))
-	    0.6d0 1.0d0 pstrm))
+(plot-fcn 1000 #'(lambda (x) (beta-function-incomplete a b x))
+0.6d0 1.0d0 pstrm))
 
 (bar  3.0 10.0)
 (bard 3.0 10.0)
@@ -135,41 +135,41 @@
 (defun betacf (a b x)
   (declare (float a b x))
   (let* ((eps 3.0e-7)
-	 (qab (+ a b))
-	 (qap (+ a 1.0))
-	 (qam (- a 1.0))
-	 (bz  (- 1.0 (/ (* qab x) qap)))
-	 (bm  1.0)
-	 (az  1.0)
-	 (am  1.0))
+         (qab (+ a b))
+         (qap (+ a 1.0))
+         (qam (- a 1.0))
+         (bz  (- 1.0 (/ (* qab x) qap)))
+         (bm  1.0)
+         (az  1.0)
+         (am  1.0))
     (declare (float eps qab qap qam bz bm az am))
     (do ((m 1 (1+ m)))
-	((>= m 100)
-	 (error "too many iterations"))
+        ((>= m 100)
+         (error "too many iterations"))
       (declare (fixnum m))
 
       (let* ((em  (float m))
-	     (tem (* 2.0 em))
-	     (d   (/ (* em (- b em) x)
-		     (* (+ qam tem) (+ a tem))))
-	     (ap  (+ az (* d am)))		; even step of recurrance
-	     (bp  (+ bz (* d bm)))
-	     (d   (- (/ (* (+ a em) (+ qab em) x)
-			(* (+ qap tem) (+ a tem)))))
-	     (app (+ ap (* d az)))		; odd step of recurrance
-	     (bpp (+ bp (* d bz))))
-	(declare (float em tem d ap bp app bpp))
+             (tem (* 2.0 em))
+             (d   (/ (* em (- b em) x)
+                     (* (+ qam tem) (+ a tem))))
+             (ap  (+ az (* d am)))		; even step of recurrance
+             (bp  (+ bz (* d bm)))
+             (d   (- (/ (* (+ a em) (+ qab em) x)
+                        (* (+ qap tem) (+ a tem)))))
+             (app (+ ap (* d az)))		; odd step of recurrance
+             (bpp (+ bp (* d bz))))
+        (declare (float em tem d ap bp app bpp))
 
-	(let ((aold az))			; save old answer
-	  (declare (float aold))
-	  ;; renormalize
-	  (setq am (/ ap  bpp))
-	  (setq bm (/ bp  bpp))
-	  (setq az (/ app bpp))
-	  (setq bz 1.0)
-	  (if (< (abs (- az aold)) (* EPS (abs az)))
-	      (return az))
-	  )))
+        (let ((aold az))			; save old answer
+          (declare (float aold))
+          ;; renormalize
+          (setq am (/ ap  bpp))
+          (setq bm (/ bp  bpp))
+          (setq az (/ app bpp))
+          (setq bz 1.0)
+          (if (< (abs (- az aold)) (* EPS (abs az)))
+              (return az))
+          )))
     ))
 
 
@@ -180,24 +180,24 @@
   (if (or (< x 0.0) (> x 1.0))
       (error "BETAI:  Bad argument, x=~f" x)
       (let ((bt (if (or (= x 0.0) (= x 1.0))
-		    0.0
-		    (exp (+ (- (log-gamma-function (+ a b))
-			       (log-gamma-function a)
-			       (log-gamma-function b))
-			    (* a (log x))
-			    (* b (log (- 1.0 x))))))))
-	(declare (float bt))
-	(if (< x (/ (+ a 1.0) (+ a b 2.0)))	; which converges quickest?
-	    (* bt (/ (betacf a b x) a))
-	    (- 1.0 (/ (* bt (betacf b a (- 1.0 x))) b))))))
+                    0.0
+                    (exp (+ (- (log-gamma-function (+ a b))
+                               (log-gamma-function a)
+                               (log-gamma-function b))
+                            (* a (log x))
+                            (* b (log (- 1.0 x))))))))
+        (declare (float bt))
+        (if (< x (/ (+ a 1.0) (+ a b 2.0)))	; which converges quickest?
+            (* bt (/ (betacf a b x) a))
+            (- 1.0 (/ (* bt (betacf b a (- 1.0 x))) b))))))
 
 #|
 
 (defun foo (a b)
-  (plot-fcn  100 #'(lambda (x) (beta-function-incomplete a b x))
-	    0.0 1.0 pstrm))
+(plot-fcn  100 #'(lambda (x) (beta-function-incomplete a b x))
+0.0 1.0 pstrm))
 (defun bar (a b)
-  (plot-fcn  100 #'(lambda (x) (betai a b x))
-	    0.0 1.0 pstrm))
+(plot-fcn  100 #'(lambda (x) (betai a b x))
+0.0 1.0 pstrm))
 
 |#

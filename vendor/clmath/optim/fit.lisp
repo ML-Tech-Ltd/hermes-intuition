@@ -48,35 +48,35 @@
 
 (defun fit (fctn x y nterms &optional (mode 0))
   (let* ((n        (array-dimension y 0))
-	 (sigmay   (make-array n           :element-type 'float :initial-element 1.0))
-	 (yfit     (make-array n           :element-type 'float :initial-element 0.0))
-	 (a        (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
-	 (sigmaa   (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
-	 (r        (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
-	 (fit-data (make-array (list n (1+ nterms))
-			       :element-type 'float :initial-element 0.0)))
-    
+         (sigmay   (make-array n           :element-type 'float :initial-element 1.0))
+         (yfit     (make-array n           :element-type 'float :initial-element 0.0))
+         (a        (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
+         (sigmaa   (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
+         (r        (make-array (1+ nterms) :element-type 'float :initial-element 0.0))
+         (fit-data (make-array (list n (1+ nterms))
+                               :element-type 'float :initial-element 0.0)))
+
     (do ((j 0 (1+ j))
-	 (arguments nil))
-	((> j nterms))
+         (arguments nil))
+        ((> j nterms))
 
       ;; cons up an arg list
       (setq arguments nil)
       (do ((k 1 (1+ k)))
-	  ((> k nterms))
-	(push (cond ((= j k) 1.0)
-		    (t       0.0))
-	      arguments))
+          ((> k nterms))
+        (push (cond ((= j k) 1.0)
+                    (t       0.0))
+              arguments))
       (setq arguments (nreverse arguments))
 
       (do ((i 0 (1+ i)))
-	  ((>= i n))
-	(setf (aref fit-data i j)
-	      (apply fctn
-			     (aref x i)
-			     0.0
-			     arguments))
-	))
+          ((>= i n))
+        (setf (aref fit-data i j)
+              (apply fctn
+                     (aref x i)
+                     0.0
+                     arguments))
+        ))
 
     (REGRES #'fit-fcn fit-data y sigmay n nterms mode yfit a sigmaa r)
 
@@ -89,21 +89,21 @@
 (eval-when (eval)
 |#
 #|
-  (defun fitest0 (x a0 a1 a2)
-    (+ a0
-	(* a1 (sin x))
-	(* a2 (cos x))))
+(defun fitest0 (x a0 a1 a2)
+(+ a0
+(* a1 (sin x))
+(* a2 (cos x))))
 
-  (defun fitest ()
-    (let ((x (make-array 20 :element-type 'float :initial-element 0.0))
-	  (y (make-array 20 :element-type 'float :initial-element 0.0)))
+(defun fitest ()
+(let ((x (make-array 20 :element-type 'float :initial-element 0.0))
+(y (make-array 20 :element-type 'float :initial-element 0.0)))
 
-      (do ((i 0 (1+ i)))
-	  ((>= i 20))
-	(setf (aref x i) (float i))
-	(setf (aref y i) (fitest0 (float i) 0.0 0.27 0.73)))
+(do ((i 0 (1+ i)))
+((>= i 20))
+(setf (aref x i) (float i))
+(setf (aref y i) (fitest0 (float i) 0.0 0.27 0.73)))
 
-      (fit #'fitest0 x y 2)))
+(fit #'fitest0 x y 2)))
 
-  )
+)
 |#

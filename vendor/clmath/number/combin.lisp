@@ -42,7 +42,7 @@
 ;;; A table to hold precomputed values
 ;;;
 (defvar dlog-factorial-table
-	(make-array 100 :initial-element NIL))
+  (make-array 100 :initial-element NIL))
 
 ;;; A function to precompute the values of the table
 ;;;   -- not used
@@ -50,22 +50,22 @@
 (defun dlog-factorial-table-precompute ()
   (dotimes (i (array-dimension dlog-factorial-table 0))
     (setf (aref dlog-factorial-table i)
-	  (if (<= i 1)
-	      0.0d0
-	      (log-gamma-function (+ (float i 1.0d0) 1.0d0))))))
+          (if (<= i 1)
+              0.0d0
+              (log-gamma-function (+ (float i 1.0d0) 1.0d0))))))
 
 ;;; Double Precision version of the factorial
 ;;;
 (defun dlog-factorial (n)
   (cond ((<  n 0) (error "LOG-FACTORIAL"))
-	((<= n 1) 0.0d0)
-	((<  n (array-dimension dlog-factorial-table 0))
-	 (if (aref dlog-factorial-table n)
-	     (aref dlog-factorial-table n)
-	     (setf (aref dlog-factorial-table n)
-		   (log-gamma-function (+ (float n) 1.0d0)))))
-	(t
-	 (log-gamma-function (+ (float n) 1.0d0)))))
+        ((<= n 1) 0.0d0)
+        ((<  n (array-dimension dlog-factorial-table 0))
+         (if (aref dlog-factorial-table n)
+             (aref dlog-factorial-table n)
+             (setf (aref dlog-factorial-table n)
+                   (log-gamma-function (+ (float n) 1.0d0)))))
+        (t
+         (log-gamma-function (+ (float n) 1.0d0)))))
 
 ;;; Single Precision mooches off of the double precision
 ;;;   (the table will have all/most of the reasonable values)
@@ -77,20 +77,20 @@
 ;;;; Floating Point Factorial
 
 (defvar dfactorial-table
-	(let* ((n     100)
-	       (array (make-array n
-				  :element-type    'double-float
-				  :initial-element 1.0d0)))
-	  (do ((i 1 (1+ i)))
-	      ((>= i n) array)
-	    (setf (aref array i) (* i (aref array (- i 1)))))))
+  (let* ((n     100)
+         (array (make-array n
+                            :element-type    'double-float
+                            :initial-element 1.0d0)))
+    (do ((i 1 (1+ i)))
+        ((>= i n) array)
+      (setf (aref array i) (* i (aref array (- i 1)))))))
 
 (defun dfactorial (n)
   (cond ((< n 0) (error "DFACTORIAL"))
-	((< n (array-dimension dfactorial-table 0))
-	 (aref dfactorial-table n))
-	(t
-	 (values (round (exp (dlog-factorial n)))))))
+        ((< n (array-dimension dfactorial-table 0))
+         (aref dfactorial-table n))
+        (t
+         (values (round (exp (dlog-factorial n)))))))
 
 (defun ffactorial (n)
   (float (dfactorial n) 1.0))
@@ -107,7 +107,7 @@
 (defun gprod (n k m)
   (let ((a (/ (float k) (float m))))
     (values (round (/ (* (gamma-function (+ (float n) a)) (expt m n))
-		      (gamma-function a))))))
+                      (gamma-function a))))))
 
 ;;; so 11*7*3 = (gprod 3 3 4) = 231
 
@@ -116,11 +116,11 @@
 (defun gfact (N m)
   (if (= (rem N m) 0)
       (gprod (ceiling n m)			; how many factors
-	     m					; first number is m
-	     m)
+             m					; first number is m
+             m)
       (gprod (ceiling n m)			; how many factors
-	     (rem N m)				; first number is rem(N,m)
-	     m)))
+             (rem N m)				; first number is rem(N,m)
+             m)))
 
 
 ;;;; n CHOOSE k
@@ -130,7 +130,7 @@
 
 ;;; There are n! ways to arrange all the objects
 ;;; Break into two groups
-;;;   there are k! ways to arrange one 
+;;;   there are k! ways to arrange one
 ;;;         and (n-k)! ways to arrange the other
 
 (defun choose-naive (n k)
@@ -139,7 +139,7 @@
 
 ;;; Minimize the number of multiplies
 ;;;
-;;;                 10 9 8   7 6 5 4 3 2 1 
+;;;                 10 9 8   7 6 5 4 3 2 1
 ;;;   eg 10 C 3 =   ----------------------
 ;;;                 (3 2 1) (7 6 5 4 3 2 1)
 ;;;
@@ -149,15 +149,15 @@
   (declare (integer n k))
   (let ((n-k (- n k)))
     (if (< n-k k)
-	(choose n n-k)				; n C k = n C n-k
-	(do ((i n (1- i))
-	     (j k (1- j))
-	     (c1 1)
-	     (c2 1))
-	    ((<= j 0) (the integer (/ c1 c2)))
-	  (declare (integer i j c1 c2))
-	  (setq c1 (* c1 i))
-	  (setq c2 (* c2 j))))))
+        (choose n n-k)				; n C k = n C n-k
+        (do ((i n (1- i))
+             (j k (1- j))
+             (c1 1)
+             (c2 1))
+            ((<= j 0) (the integer (/ c1 c2)))
+          (declare (integer i j c1 c2))
+          (setq c1 (* c1 i))
+          (setq c2 (* c2 j))))))
 
 (defun log-choose (n k)
   (- (log-factorial n)
@@ -211,11 +211,11 @@
 
 (defun bellr (row col)
   (cond ((and (= col 1) (= row 1)) 1)
-	((= col 1)                 (bellr (1- row) (1- row)))
-	(t                         (+ (bellr (1- row) (1- col))
-					 (bellr row      (1- col))))))
+        ((= col 1)                 (bellr (1- row) (1- row)))
+        (t                         (+ (bellr (1- row) (1- col))
+                                      (bellr row      (1- col))))))
 
 (defun bell-number (n)
   (cond ((minusp n) (error "BELL-NUMBER:  bad argument" n))
-	((zerop  n) 1)
-	(t          (bellr n n))))
+        ((zerop  n) 1)
+        (t          (bellr n n))))
